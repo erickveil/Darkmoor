@@ -11,6 +11,17 @@ namespace Darkmoor
         readonly Random _rng = new Random();
 
         /// <summary>
+        /// Generates a number between min and max, inclusive.
+        /// </summary>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
+        public int RandomNumber(int min, int max)
+        {
+            return _rng.Next(min, max + 1);
+        }
+
+        /// <summary>
         /// Rolls qty dice with faces and returns the total.
         /// Can obtain the individual die rolls in results.
         /// Provides expected variation from the mean.
