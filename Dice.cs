@@ -8,6 +8,8 @@ namespace Darkmoor
 {
     public class Dice
     {
+        readonly Random _rng = new Random();
+
         /// <summary>
         /// Rolls qty dice with faces and returns the total.
         /// Can obtain the individual die rolls in results.
@@ -17,14 +19,13 @@ namespace Darkmoor
         /// <param name="faces"></param>
         /// <param name="results"></param>
         /// <returns></returns>
-        public static int Roll(int qty, int faces, out List<int> results)
+        public int Roll(int qty, int faces, out List<int> results)
         {
             results = new List<int>();
-            var rng = new Random();
             int total = 0;
             for (int i = 0; i < qty; ++i)
             {
-                int roll = rng.Next(faces) + 1;
+                int roll = _rng.Next(faces) + 1;
                 total += roll;
                 results.Add(roll);
                 //Console.WriteLine("Roll: " + roll);
@@ -39,13 +40,12 @@ namespace Darkmoor
         /// <param name="qty"></param>
         /// <param name="faces"></param>
         /// <returns></returns>
-        public static int Roll(int qty, int faces)
+        public int Roll(int qty, int faces)
         {
-            var rng = new Random();
             int total = 0;
             for (int i = 0; i < qty; ++i)
             {
-                int roll = rng.Next(faces) + 1;
+                int roll = _rng.Next(faces) + 1;
                 total += roll;
                 //Console.WriteLine("Roll: " + roll);
             }

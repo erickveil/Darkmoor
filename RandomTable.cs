@@ -10,6 +10,7 @@ namespace Darkmoor
     {
         private List<T> _ItemList;
         private int _NumEntries;
+        private Dice _die = new Dice();
 
         /// <summary>
         /// Initializes the entry list
@@ -40,7 +41,7 @@ namespace Darkmoor
         /// <returns></returns>
         public T GetResult()
         {
-            int roll = Dice.Roll(1, _ItemList.Count) - 1;
+            int roll = _die.Roll(1, _ItemList.Count) - 1;
             return _ItemList[roll];
         }
 

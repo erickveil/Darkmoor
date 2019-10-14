@@ -16,10 +16,12 @@ namespace Darkmoor
         {
             Console.WriteLine("Starting...");
 
+            var namer = new RandomName();
+
             for (int i = 0; i < 10; ++i)
             {
-                //Console.WriteLine(RandomName.CreateWord());
-                Console.WriteLine(Dice.Roll(1, 6));
+                Console.WriteLine(namer.CreateWord());
+                //Console.WriteLine(die.Roll(1, 6));
             }
 
             Application.EnableVisualStyles();
