@@ -60,10 +60,10 @@ namespace Darkmoor
         /// <returns></returns>
         public string CreateWord()
         {
-            int syllables = _die.Roll(1, 3);
-            // Make 3 syllables less common
-            if (syllables == 3) { syllables = _die.Roll(1, 3);  }
+            int syllables = _die.Roll(1, 2);
+            bool isFeminine = _die.Roll(1, 6) <= 3;
             uint syllableCount = Convert.ToUInt32(syllables);
+            if (isFeminine) { return CreateWord(syllableCount) + CreateVowel(); }
             return CreateWord(syllableCount);
         }
 
