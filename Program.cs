@@ -16,12 +16,11 @@ namespace Darkmoor
         {
             Console.WriteLine("Starting...");
 
-            var table = new RandomTable<int>();
-            table.AddItem(12);
-            table.AddItem(11);
-            table.AddItem(83838);
-            int result = table.GetResult();
-            Console.WriteLine("Result: " + result);
+            for (int i = 0; i < 10; ++i)
+            {
+                //Console.WriteLine(RandomName.CreateWord());
+                Console.WriteLine(Dice.Roll(1, 6));
+            }
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
