@@ -16,6 +16,13 @@ namespace Darkmoor
         {
             Console.WriteLine("Starting...");
 
+            var table = new RandomTable<int>();
+            table.AddItem(12);
+            table.AddItem(11);
+            table.AddItem(83838);
+            int result = table.GetResult();
+            Console.WriteLine("Result: " + result);
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());

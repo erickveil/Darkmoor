@@ -27,9 +27,9 @@ namespace Darkmoor
                 int roll = rng.Next(faces) + 1;
                 total += roll;
                 results.Add(roll);
-                Console.WriteLine("Roll: " + roll);
+                //Console.WriteLine("Roll: " + roll);
             }
-            Console.WriteLine("Total: " + total);
+            //Console.WriteLine("Total: " + total);
             return total;
         }
 
@@ -47,9 +47,9 @@ namespace Darkmoor
             {
                 int roll = rng.Next(faces) + 1;
                 total += roll;
-                Console.WriteLine("Roll: " + roll);
+                //Console.WriteLine("Roll: " + roll);
             }
-            Console.WriteLine("Total: " + total);
+            //Console.WriteLine("Total: " + total);
             return total;
         }
     }
