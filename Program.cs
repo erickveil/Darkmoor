@@ -16,7 +16,8 @@ namespace Darkmoor
         {
             Console.WriteLine("Starting...");
 
-            var namer = new RandomName();
+            var die = new Dice();
+            var namer = new RandomName(die);
 
             for (int i = 0; i < 10; ++i)
             {

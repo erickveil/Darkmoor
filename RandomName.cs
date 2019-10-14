@@ -8,7 +8,12 @@ namespace Darkmoor
 {
     class RandomName
     {
-        Dice _die = new Dice();
+        Dice _die;
+
+        public RandomName(Dice die)
+        {
+            _die = die;
+        }
 
         /// <summary>
         /// Creates some hard consonants that are easy to land on

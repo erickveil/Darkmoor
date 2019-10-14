@@ -10,14 +10,17 @@ namespace Darkmoor
     {
         private List<T> _ItemList;
         private int _NumEntries;
-        private Dice _die = new Dice();
+        private Dice _die;
 
         /// <summary>
         /// Initializes the entry list
         /// </summary>
-        public RandomTable()
+        public RandomTable(Dice die)
         {
+            _die = die;
+
             _ItemList = new List<T>();
+            _NumEntries = 0;
         }
 
         /// <summary>
