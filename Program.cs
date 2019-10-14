@@ -14,6 +14,8 @@ namespace Darkmoor
         [STAThread]
         static void Main()
         {
+            Console.WriteLine("Starting...");
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
