@@ -42,15 +42,44 @@ namespace Darkmoor
             return vowelList[roll];
         }
 
+        /// <summary>
+        /// Some pronounciation friendly word endings
+        /// </summary>
+        /// <returns></returns>
         public string WordEnd()
         {
             var vowelList = new List<string>
             {
-                "a", "e", "i", "o" 
+                "a", "e", "i", "o", "ay", "ey"
             };
             int roll = _die.Roll(1, vowelList.Count) - 1;
             return vowelList[roll];
+        }
 
+        /// <summary>
+        /// Some letter combos are just unnatural
+        /// </summary>
+        /// <param name="word"></param>
+        /// <returns></returns>
+        public string CommonReplacements(string word)
+        {
+            word = word.Replace("vv", "w");
+            word = word.Replace("ji", "y");
+            word = word.Replace("fm", "m");
+            word = word.Replace("shc", "sh");
+            word = word.Replace("jl", "j");
+            word = word.Replace("oiw", "ow");
+            word = word.Replace("jc", "j");
+            word = word.Replace("sz", "z");
+            word = word.Replace("iesh", "eesh");
+            word = word.Replace("zsh", "sh");
+            word = word.Replace("chch", "ch");
+            word = word.Replace("shsh", "sh");
+            word = word.Replace("oaj", "oge");
+            word = word.Replace("viw", "view");
+            word = word.Replace("vf", "fv");
+
+            return word;
         }
 
         /// <summary>
@@ -90,6 +119,8 @@ namespace Darkmoor
             {
                 word += CreateSyllable();
             }
+
+            word = CommonReplacements(word);
 
             if (isCapitalized)
             {
