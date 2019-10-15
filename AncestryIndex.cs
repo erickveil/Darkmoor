@@ -13,6 +13,14 @@ namespace Darkmoor
     {
         RandomTable<Ancestry> _ancestryTable;
 
+        Dice _dice;
+
+        public AncestryIndex(Dice dice)
+        {
+            _dice = dice;
+            _ancestryTable = new RandomTable<Ancestry>(dice);
+        }
+
         public void LoadConstantAncestries()
         {
             var nameList = new List<string> { 
@@ -31,6 +39,13 @@ namespace Darkmoor
                 ancestryObj.HitDice = 1;
                 _ancestryTable.AddItem(ancestryObj);
             }
+        }
+
+        Population CreateRandomPopulation()
+        {
+            var ancestry = _ancestryTable.GetResult();
+            var population = new Population(ancestry, _dice);
+            return population;
         }
 
 
