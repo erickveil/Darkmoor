@@ -42,6 +42,17 @@ namespace Darkmoor
             return vowelList[roll];
         }
 
+        public string WordEnd()
+        {
+            var vowelList = new List<string>
+            {
+                "a", "e", "i", "o" 
+            };
+            int roll = _die.Roll(1, vowelList.Count) - 1;
+            return vowelList[roll];
+
+        }
+
         /// <summary>
         /// Assembles out of consonant-vowel-consonent random mixes
         /// </summary>
@@ -58,13 +69,13 @@ namespace Darkmoor
         /// Assembles 1-3 syllables into a word
         /// </summary>
         /// <returns></returns>
-        public string CreateWord()
+        public string CreateWord(bool isCapitalized = true)
         {
             int syllables = _die.Roll(1, 2);
             bool isFeminine = _die.Roll(1, 6) <= 3;
             uint syllableCount = Convert.ToUInt32(syllables);
-            if (isFeminine) { return CreateWord(syllableCount) + CreateVowel(); }
-            return CreateWord(syllableCount);
+            if (isFeminine) { return CreateWord(syllableCount) + WordEnd(); }
+            return CreateWord(syllableCount, isCapitalized);
         }
 
         /// <summary>
@@ -72,13 +83,20 @@ namespace Darkmoor
         /// </summary>
         /// <param name="syllableCount"></param>
         /// <returns></returns>
-        public string CreateWord(uint syllableCount)
+        public string CreateWord(uint syllableCount, bool isCapitalized = true)
         {
             string word = "";
             for (uint i = 0; i < syllableCount; ++i)
             {
                 word += CreateSyllable();
             }
+
+            if (isCapitalized)
+            {
+                word = word.First().ToString().ToUpper()
+                    + String.Join("", word.Skip(1));
+            }
+
             return word;
         }
     }

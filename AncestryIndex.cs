@@ -41,7 +41,7 @@ namespace Darkmoor
             }
         }
 
-        Population CreateRandomPopulation()
+        public Population CreateRandomPopulation()
         {
             var ancestry = _ancestryTable.GetResult();
             var population = new Population(ancestry, _dice);

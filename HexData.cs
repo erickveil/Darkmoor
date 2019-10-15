@@ -15,9 +15,9 @@ namespace Darkmoor
     /// </summary>
     class HexData
     {
-        public List<Lair> LairList = new List<Lair>();
+        public string Name;
         public int XCoord = 0;
         public int YCoord = 0;
-
+        public List<Lair> LairList = new List<Lair>();
     }
 }

@@ -15,5 +15,23 @@ namespace Darkmoor
     {
         public string Name = "Unnamed";
         public List<Population> CitizenList = new List<Population>();
+
+        private Dice _dice;
+
+        public Civilization(Dice dice)
+        {
+            _dice = dice;
+        }
+
+        public void SetAsRandomCiv()
+        {
+            var nameGen = new RandomName(_dice);
+            Name = nameGen.CreateWord();
+
+            var popGen = new AncestryIndex(_dice);
+            popGen.LoadConstantAncestries();
+            Population pop = popGen.CreateRandomPopulation();
+            CitizenList.Add(pop);
+        }
     }
 }

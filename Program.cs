@@ -16,14 +16,10 @@ namespace Darkmoor
         {
             Console.WriteLine("Starting...");
 
-            var die = new Dice();
-            var namer = new RandomName(die);
+            var dice = new Dice();
 
-            for (int i = 0; i < 10; ++i)
-            {
-                Console.WriteLine(namer.CreateWord());
-                //Console.WriteLine(die.Roll(1, 6));
-            }
+            var worldMap = new HexDataIndex(dice);
+            worldMap.GenerateWorld(3, 3);
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

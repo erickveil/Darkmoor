@@ -15,8 +15,40 @@ namespace Darkmoor
     /// </summary>
     class Lair
     {
-        string Name = "Unnamed";
-        string Type = "Cave";
-        Civilization HomeCiv;
+        public string Name = "Unnamed";
+        public string Type = "Cave";
+        public Civilization HomeCiv;
+        public int MileHexIndex = 0;
+
+        private Dice _dice;
+
+        public Lair(Dice dice)
+        {
+            _dice = dice;
+        }
+
+        public void setAsRandomLair()
+        {
+            // Name
+            var nameGen = new RandomName(_dice);
+            Name = nameGen.CreateWord();
+
+            // Type
+            var lairTypeList = new List<string>()
+            {
+                "Cave", "Dungeon", "Castle", "Keep", "Village", "Town", "City",
+                "Hamlet"
+            };
+            int lairIndex = _dice.RandomNumber(0, lairTypeList.Count - 1);
+            Type = lairTypeList[lairIndex];
+
+            // Civ
+            var civ = new Civilization(_dice);
+            civ.SetAsRandomCiv();
+            HomeCiv = civ;
+
+            // Location in hex
+            MileHexIndex = _dice.RandomNumber(1, 132);
+        }
     }
 }
