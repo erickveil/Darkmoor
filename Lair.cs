@@ -24,11 +24,18 @@ namespace Darkmoor
 
         private Dice _dice;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="dice"></param>
         public Lair(Dice dice)
         {
             _dice = dice;
         }
 
+        /// <summary>
+        /// Builds a random civ as founders, and creates the lair
+        /// </summary>
         public void InitializeAsRandomLair()
         {
             // Name
@@ -52,10 +59,18 @@ namespace Darkmoor
             // Location in hex
             MileHexIndex = _dice.RandomNumber(1, 132);
 
-            string record = Name + " " + Type + " has been founded by the "
-                + HomeCiv.Name + " "
-                + HomeCiv.Patricians.BaseAncestry.Name + "s";
+            string record = Name + " " + Type + " has been founded by the " 
+                + HomeCiv.GetFullName() + "s";
             History.addRecord(record);
+        }
+
+        /// <summary>
+        /// Name and type make up the full name.
+        /// </summary>
+        /// <returns></returns>
+        public string GetFullName()
+        {
+            return Name + " " + Type;
         }
     }
 }

@@ -54,7 +54,7 @@ namespace Darkmoor
                     var lair = LairList[i];
                     int lastIndex = LairList.Count - 1;
                     int secondToLastIndex = lastIndex - 1;
-                    record += lair.Name + " " + lair.Type;
+                    record += lair.GetFullName();
                     if (i == secondToLastIndex)
                     {
                         record += ", and ";
@@ -82,11 +82,11 @@ namespace Darkmoor
                         lair.HomeCiv.Patricians.BaseAncestry.Name;
                     if (!isSameAncestry) { continue; }
                     bool isSameCiv =
-                        otherLair.HomeCiv.Name ==
-                        lair.HomeCiv.Name;
+                        otherLair.HomeCiv.CulturalIdentity ==
+                        lair.HomeCiv.CulturalIdentity;
                     if (isSameCiv) { continue; }
-                    otherLair.HomeCiv.JoinOtherCivilization(lair.HomeCiv.Name);
-                    lair.HomeCiv.JoinOurCivilization(otherLair.HomeCiv.Name);
+                    otherLair.HomeCiv.JoinOtherCivilization(lair.HomeCiv.CulturalIdentity);
+                    lair.HomeCiv.JoinOurCivilization(otherLair.HomeCiv.CulturalIdentity);
                 }
             }
         }
