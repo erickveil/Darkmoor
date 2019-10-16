@@ -56,7 +56,7 @@ namespace Darkmoor
         /// <param name="otherCivName"></param>
         public void JoinOtherCivilization(string otherCivName)
         {
-            string record = GetFullName()
+            string record = RandomName.Pluralize(GetFullName())
                 + " have been assimilated into the " + otherCivName 
                 + " Civilization.";
             CulturalIdentity = otherCivName;
@@ -70,7 +70,7 @@ namespace Darkmoor
         /// <param name="otherCivName"></param>
         public void JoinOurCivilization(string otherCivName)
         {
-            string record = GetFullName()
+            string record = RandomName.Pluralize(GetFullName())
                 + " have assimilated the " + otherCivName 
                 + " Civilization.";
             History.addRecord(record, false);

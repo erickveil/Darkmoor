@@ -60,7 +60,7 @@ namespace Darkmoor
             MileHexIndex = _dice.RandomNumber(1, 132);
 
             string record = Name + " " + Type + " has been founded by the " 
-                + HomeCiv.GetFullName() + "s";
+                + RandomName.Pluralize(HomeCiv.GetFullName());
             History.addRecord(record);
         }
 

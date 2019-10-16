@@ -37,8 +37,9 @@ namespace Darkmoor
             BaseAncestry = ancestryGen.GetRandomAncestry();
             Members = _dice.RandomNumber(BaseAncestry.MinAppearing, 
                 BaseAncestry.MaxAppearing);
-            string record = Members + " " + BaseAncestry.Name 
-                + "s have entered the world.";
+            string record = Members + " " 
+                + RandomName.Pluralize(BaseAncestry.Name)
+                + " have entered the world.";
             History.addRecord(record);
         }
     }

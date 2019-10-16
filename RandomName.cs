@@ -131,5 +131,35 @@ namespace Darkmoor
 
             return word;
         }
+
+        /// <summary>
+        /// Attempts to correctly pluralize a noun.
+        /// </summary>
+        /// <param name="baseStr"></param>
+        /// <param name="qty">Allows logic for determining if the word should 
+        /// even be plural by providing the qty. Will pluralize without 
+        /// checking, if left out.</param>
+        /// <returns></returns>
+        public static string Pluralize(string baseStr, int qty = 2)
+        {
+            int length = baseStr.Count();
+            if (qty == 1) { return baseStr; }
+            if (length == 0) { return baseStr; }
+            if (length == 1) { return baseStr + "s"; }
+
+            if  (baseStr.Last() == 'f')
+            {
+                baseStr = baseStr.Substring(0, length - 1);
+                baseStr += "ves";
+                return baseStr;
+            }
+            if (baseStr.Last() == 's')
+            {
+                baseStr += "es";
+                return baseStr;
+            }
+
+            return baseStr + "s";
+        }
     }
 }
