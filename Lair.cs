@@ -19,6 +19,8 @@ namespace Darkmoor
         public string Type = "Cave";
         public Civilization HomeCiv;
         public int MileHexIndex = 0;
+        public HistoryLog History = new HistoryLog();
+
 
         private Dice _dice;
 
@@ -27,7 +29,7 @@ namespace Darkmoor
             _dice = dice;
         }
 
-        public void setAsRandomLair()
+        public void InitializeAsRandomLair()
         {
             // Name
             var nameGen = new RandomName(_dice);
@@ -44,11 +46,16 @@ namespace Darkmoor
 
             // Civ
             var civ = new Civilization(_dice);
-            civ.SetAsRandomCiv();
+            civ.InitializeAsRandomCiv();
             HomeCiv = civ;
 
             // Location in hex
             MileHexIndex = _dice.RandomNumber(1, 132);
+
+            string record = Name + " " + Type + " has been founded by the "
+                + HomeCiv.Name + " "
+                + HomeCiv.CitizenList[0].BaseAncestry.Name + "s";
+            History.addRecord(record);
         }
     }
 }

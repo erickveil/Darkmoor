@@ -26,39 +26,15 @@ namespace Darkmoor
             {
                 for (int y = 0; y < height; ++y)
                 {
-                    HexList.Add(createRandomHex(x, y));
+                    HexList.Add(CreateRandomHex(x, y));
                 }
             }
         }
 
-        public HexData createRandomHex(int x, int y)
+        public HexData CreateRandomHex(int x, int y)
         {
-            HexData hex = new HexData();
-
-            var nameGen = new RandomName(_dice);
-            hex.Name = nameGen.CreateWord();
-
-            hex.XCoord = x;
-            hex.YCoord = y;
-
-            string logStr = hex.Name + " created at location " + x + ", " + y;
-            Console.WriteLine(logStr);
-
-            int numLairs = _dice.Roll(1, 6) - 1;
-            for (int i = 0; i < numLairs; ++i)
-            {
-                var lair = new Lair(_dice);
-                lair.setAsRandomLair();
-                hex.LairList.Add(lair);
-
-                logStr = hex.Name + " (" + hex.XCoord + ", "
-                    + hex.YCoord + ") has a new Lair: " + lair.Name + " "
-                    + lair.Type + ", occupied by the " + lair.HomeCiv.Name 
-                    + " " + lair.HomeCiv.CitizenList[0].BaseAncestry.Name 
-                    + "s in hex " + lair.MileHexIndex;
-                Console.WriteLine(logStr);
-            }
-
+            HexData hex = new HexData(_dice);
+            hex.InitializeAsRandomHex(x, y);
             return hex;
         }
     }

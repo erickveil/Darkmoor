@@ -58,6 +58,7 @@
     </Compile>
     <Compile Include="HexData.cs" />
     <Compile Include="HexDataIndex.cs" />
+    <Compile Include="HistoryLog.cs" />
     <Compile Include="Lair.cs" />
     <Compile Include="Population.cs" />
     <Compile Include="Program.cs" />
