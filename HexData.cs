@@ -78,8 +78,8 @@ namespace Darkmoor
                 {
                     if (otherLair.Name == lair.Name) { continue; }
                     bool isSameAncestry =
-                        otherLair.HomeCiv.CitizenList[0].BaseAncestry.Name ==
-                        lair.HomeCiv.CitizenList[0].BaseAncestry.Name;
+                        otherLair.HomeCiv.Patricians.BaseAncestry.Name ==
+                        lair.HomeCiv.Patricians.BaseAncestry.Name;
                     if (!isSameAncestry) { continue; }
                     bool isSameCiv =
                         otherLair.HomeCiv.Name ==

@@ -54,7 +54,7 @@ namespace Darkmoor
 
             string record = Name + " " + Type + " has been founded by the "
                 + HomeCiv.Name + " "
-                + HomeCiv.CitizenList[0].BaseAncestry.Name + "s";
+                + HomeCiv.Patricians.BaseAncestry.Name + "s";
             History.addRecord(record);
         }
     }

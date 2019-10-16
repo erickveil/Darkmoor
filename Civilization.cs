@@ -16,7 +16,7 @@ namespace Darkmoor
     class Civilization
     {
         public string Name = "Unnamed";
-        public List<Population> CitizenList = new List<Population>();
+        public Population Patricians;
         public HistoryLog History = new HistoryLog();
 
         private Dice _dice;
@@ -33,7 +33,7 @@ namespace Darkmoor
 
             var founders = new Population(_dice);
             founders.InitializeAsRandomPop();
-            CitizenList.Add(founders);
+            Patricians = founders;
 
             string record = "The " + Name + " " + founders.BaseAncestry.Name
                 + " Civilization has begun, with a starting population of "
@@ -44,7 +44,7 @@ namespace Darkmoor
         public void JoinOtherCivilization(string otherCivName)
         {
             string record = Name 
-                + " " + CitizenList[0].BaseAncestry.Name
+                + " " + Patricians.BaseAncestry.Name
                 + "s have been assimilated into the " + otherCivName 
                 + " Civilization.";
             Name = otherCivName;
@@ -54,11 +54,12 @@ namespace Darkmoor
         public void JoinOurCivilization(string otherCivName)
         {
             string record = Name 
-                + " " + CitizenList[0].BaseAncestry.Name
+                + " " + Patricians.BaseAncestry.Name
                 + "s have assimilated the " + otherCivName 
                 + " Civilization.";
             Name = otherCivName;
             History.addRecord(record, false);
         }
+
     }
 }

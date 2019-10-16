@@ -41,6 +41,5 @@ namespace Darkmoor
                 + "s have entered the world.";
             History.addRecord(record);
         }
-
     }
 }
