@@ -44,16 +44,51 @@ namespace Darkmoor
                 LairList.Add(lair);
             }
 
-            string record = Name + " (" + x + ", " + y + ") has been discovered.";
+            string record = Name + " (" + x + ", " + y 
+                + ") has been discovered.";
             if (LairList.Count > 0)
             {
                 record += " The following lairs are found within: ";
-                foreach(var lair in LairList)
+                for (int i = 0; i < LairList.Count; ++i)
                 {
-                    record += lair.Name + " " + lair.Type + ", ";
+                    var lair = LairList[i];
+                    int lastIndex = LairList.Count - 1;
+                    int secondToLastIndex = lastIndex - 1;
+                    record += lair.Name + " " + lair.Type;
+                    if (i == secondToLastIndex)
+                    {
+                        record += ", and ";
+                        continue;
+                    }
+                    if (i == lastIndex) { continue; }
+                    record += ", ";
                 }
             }
             History.addRecord(record);
+
+            JoinLikeForces();
+        }
+
+        private void JoinLikeForces()
+        {
+            foreach(var lair in LairList)
+            {
+                Civilization lairRulers = lair.HomeCiv;
+                foreach(var otherLair in LairList)
+                {
+                    if (otherLair.Name == lair.Name) { continue; }
+                    bool isSameAncestry =
+                        otherLair.HomeCiv.CitizenList[0].BaseAncestry.Name ==
+                        lair.HomeCiv.CitizenList[0].BaseAncestry.Name;
+                    if (!isSameAncestry) { continue; }
+                    bool isSameCiv =
+                        otherLair.HomeCiv.Name ==
+                        lair.HomeCiv.Name;
+                    if (isSameCiv) { continue; }
+                    otherLair.HomeCiv.JoinOtherCivilization(lair.HomeCiv.Name);
+                    lair.HomeCiv.JoinOurCivilization(otherLair.HomeCiv.Name);
+                }
+            }
         }
     }
 }

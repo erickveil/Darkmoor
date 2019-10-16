@@ -35,10 +35,30 @@ namespace Darkmoor
             founders.InitializeAsRandomPop();
             CitizenList.Add(founders);
 
-            string record = Name + " " + founders.BaseAncestry.Name
-                + "s have been founded, with a starting population of "
+            string record = "The " + Name + " " + founders.BaseAncestry.Name
+                + " Civilization has begun, with a starting population of "
                 + founders.Members;
             History.addRecord(record);
+        }
+
+        public void JoinOtherCivilization(string otherCivName)
+        {
+            string record = Name 
+                + " " + CitizenList[0].BaseAncestry.Name
+                + "s have been assimilated into the " + otherCivName 
+                + " Civilization.";
+            Name = otherCivName;
+            History.addRecord(record);
+        }
+        
+        public void JoinOurCivilization(string otherCivName)
+        {
+            string record = Name 
+                + " " + CitizenList[0].BaseAncestry.Name
+                + "s have assimilated the " + otherCivName 
+                + " Civilization.";
+            Name = otherCivName;
+            History.addRecord(record, false);
         }
     }
 }

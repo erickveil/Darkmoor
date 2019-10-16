@@ -14,10 +14,13 @@ namespace Darkmoor
     {
         List<string> _historyList = new List<string>();
 
-        public void addRecord(string record)
+        public void addRecord(string record, bool isLogged = true)
         {
             _historyList.Add(record);
-            Console.WriteLine(record);
+            if (isLogged)
+            {
+                Console.WriteLine(record);
+            }
         }
     }
 }

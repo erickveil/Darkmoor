@@ -31,8 +31,8 @@ namespace Darkmoor
             {
                 var ancestryObj = new Ancestry();
                 ancestryObj.Name = name;
-                ancestryObj.MinAppearing = 100;
-                ancestryObj.MaxAppearing = 1000;
+                ancestryObj.MinAppearing = 180;
+                ancestryObj.MaxAppearing = 220;
                 ancestryObj.BaseAc = 10;
                 ancestryObj.BaseToHit = 0;
                 ancestryObj.BaseNumAttacks = 1;
