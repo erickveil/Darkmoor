@@ -79,6 +79,11 @@ namespace Darkmoor
             word = word.Replace("viw", "view");
             word = word.Replace("vf", "fv");
             word = word.Replace("fs", "fes");
+            word = word.Replace("jg", "g");
+            word = word.Replace("pb", "b");
+            word = word.Replace("zch", "ch");
+            word = word.Replace("fth", "th");
+            word = word.Replace("cs", "ks");
 
             return word;
         }
