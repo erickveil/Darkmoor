@@ -22,7 +22,7 @@ namespace Darkmoor
         public HistoryLog History = new HistoryLog();
 
 
-        private Dice _dice;
+        private readonly Dice _dice;
 
         /// <summary>
         /// Constructor

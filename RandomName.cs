@@ -8,7 +8,7 @@ namespace Darkmoor
 {
     class RandomName
     {
-        Dice _die;
+        readonly Dice _die;
 
         public RandomName(Dice die)
         {

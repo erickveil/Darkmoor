@@ -23,7 +23,7 @@ namespace Darkmoor
         public string Rank = "Patrician";
         public HistoryLog History = new HistoryLog();
 
-        private Dice _dice;
+        readonly Dice _dice;
 
         public Population(Dice dice)
         {

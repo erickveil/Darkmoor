@@ -20,8 +20,7 @@ namespace Darkmoor
         public int YCoord = 0;
         public List<Lair> LairList = new List<Lair>();
         public HistoryLog History = new HistoryLog();
-
-        Dice _dice;
+        readonly Dice _dice;
 
         public HexData(Dice dice)
         {

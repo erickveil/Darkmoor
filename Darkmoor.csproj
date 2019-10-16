@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="Ancestry.cs" />
     <Compile Include="AncestryIndex.cs" />
+    <Compile Include="Battle.cs" />
     <Compile Include="Civilization.cs" />
     <Compile Include="Dice.cs" />
     <Compile Include="Form1.cs">
