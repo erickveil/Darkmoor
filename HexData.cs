@@ -20,6 +20,7 @@ namespace Darkmoor
         public int YCoord = 0;
         public List<Lair> LairList = new List<Lair>();
         public HistoryLog History = new HistoryLog();
+
         readonly Dice _dice;
 
         public HexData(Dice dice)
@@ -64,17 +65,35 @@ namespace Darkmoor
                 }
             }
             History.addRecord(record);
-
-            JoinLikeForces();
         }
 
+        public Tuple<int, int> FindNeighborByIndex(int index)
+        {
+            switch(index)
+            {
+                case 0: return Tuple.Create(XCoord, YCoord);
+                case 1: return Tuple.Create(XCoord, YCoord + 1);
+                case 2: return Tuple.Create(XCoord + 1, YCoord);
+                case 3: return Tuple.Create(XCoord + 1, YCoord - 1);
+                case 4: return Tuple.Create(XCoord, YCoord - 1);
+                case 5: return Tuple.Create(XCoord - 1, YCoord - 1);
+                default: return Tuple.Create(XCoord - 1, YCoord);
+            }
+        }
+
+        /// <summary>
+        /// joining forces in the same hex
+        /// We don't do this anymore, as we just assume these are allies.
+        /// </summary>
         private void JoinLikeForces()
         {
             foreach(var lair in LairList)
             {
+                if (lair.IsRuins()) { continue; }
                 Civilization lairRulers = lair.HomeCiv;
                 foreach(var otherLair in LairList)
                 {
+                    if (otherLair.IsRuins()) { continue; }
                     if (otherLair.Name == lair.Name) { continue; }
                     bool isSameAncestry =
                         otherLair.HomeCiv.Patricians.BaseAncestry.Name ==
@@ -89,5 +108,6 @@ namespace Darkmoor
                 }
             }
         }
+
     }
 }

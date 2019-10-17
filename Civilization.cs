@@ -76,7 +76,7 @@ namespace Darkmoor
             string record = RandomName.Pluralize(GetFullName())
                 + " have assimilated the " + otherCivName 
                 + " Civilization.";
-            History.addRecord(record, false);
+            History.addRecord(record, isLogged: false);
         }
 
         /// <summary>
@@ -89,5 +89,11 @@ namespace Darkmoor
             return CulturalIdentity + " " + Patricians.BaseAncestry.Name;
         }
 
+        public void DissolvePopulation()
+        {
+            Patricians.Members = 0;
+            string record = GetFullName() + " have disbanded.";
+            History.addRecord(record);
+        }
     }
 }

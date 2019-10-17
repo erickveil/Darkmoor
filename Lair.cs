@@ -73,5 +73,38 @@ namespace Darkmoor
         {
             return Name + " " + Type;
         }
+
+        public bool IsRuins()
+        {
+            return HomeCiv is null;
+        }
+
+        public void AbandonIfEmpty()
+        {
+            if (IsRuins()) { return; }
+            if (HomeCiv.Patricians.Members > 0) { return; } 
+            HomeCiv = null;
+            string record = GetFullName() + " has fallen into ruin.";
+            History.addRecord(record);
+        }
+
+        public void ForceAbandon()
+        {
+            string record = GetFullName() + " has been abandoned by "
+                + HomeCiv.GetFullName()
+                + " and fallen into ruin.";
+            History.addRecord(record);
+            HomeCiv.History.addRecord(record, isLogged: false);
+            HomeCiv = null;
+        }
+
+        public void MoveCivIn(Civilization civ)
+        {
+            HomeCiv = civ;
+            string record = civ.GetFullName() + " have taken control of "
+                + GetFullName();
+            History.addRecord(record);
+            civ.History.addRecord(record, isLogged: false);
+        }
     }
 }

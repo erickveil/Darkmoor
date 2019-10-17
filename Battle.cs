@@ -25,18 +25,23 @@ namespace Darkmoor
 
         private int _attackerStartingForces;
         private int _defenderStartingForces;
+
+        private readonly HexDataIndex _worldMap;
+
         readonly Dice _dice;
 
-        public Battle(Dice dice)
+        public Battle(Dice dice, HexDataIndex worldMap)
         {
             _dice = dice;
+            _worldMap = worldMap;
         }
 
-        public void ResolveBattle(Civilization attacker, HexData attackerHome,
-            Civilization defender, HexData defenderHome)
+        public void ResolveBattle(Civilization attacker, HexData attackerLands,
+            Civilization defender, HexData defenderLands, Lair attackerBase,
+            Lair defenderBase)
         {
-            GatherAttackers(attacker, attackerHome);
-            GatherDefenders(defender, defenderHome);
+            GatherAttackers(attacker, attackerLands);
+            GatherDefenders(defender, defenderLands);
             _attackerStartingForces = GetTotalCombatants(AttackerList);
             _defenderStartingForces = GetTotalCombatants(DefenderList);
 
@@ -48,19 +53,36 @@ namespace Darkmoor
             (_defenderState == CombatantState.COMBATANT_STATE_RALLIED)
             );
 
+            // recover from battle
+            ResolveSurvivors(_attackerStartingForces, AttackerList);
+            ResolveSurvivors(_defenderStartingForces, DefenderList);
+
             // TODO: determine outcome of battle.
             if (_attackerState == CombatantState.COMBATANT_STATE_RALLIED)
             {
-                // attacker wins!
+                // defender loses!
+                string defenderBaseName = defenderBase.Name;
+                MoveLosers(defender, defenderLands, defenderBaseName);
+                defenderBase.MoveCivIn(attacker);
+                attackerBase.ForceAbandon();
             }
             else if (_defenderState == CombatantState.COMBATANT_STATE_RALLIED)
             {
-                // defender wins!
+                // attacker loses!
+                string attackerBaseName = attackerBase.Name;
+                // It's interesting that attackers don't go back home.
+                MoveLosers(attacker, attackerLands, attackerBaseName);
+                attackerBase.ForceAbandon();
             }
             else
             {
                 // mutual destruction is highly unlikely, but not impossible.
+                attacker.DissolvePopulation();
+                defender.DissolvePopulation();
             }
+
+            // any lingering civs with zero population are removed.
+            _worldMap.CleanOutRuins();
         }
 
         public void GatherAttackers(Civilization attacker, 
@@ -68,6 +90,7 @@ namespace Darkmoor
         {
             foreach(var lair in attackerHome.LairList)
             {
+                if (lair.IsRuins()) { continue; }
                 if (lair.HomeCiv.GetFullName() == attacker.GetFullName())
                 {
                     if (attacker.LeaderCompetency > _dice.Roll(1, 12))
@@ -83,6 +106,7 @@ namespace Darkmoor
         {
             foreach(var lair in defenderHome.LairList)
             {
+                if (lair.IsRuins()) { continue; }
                 if (lair.HomeCiv.GetFullName() == defender.GetFullName())
                 {
                     if (defender.LeaderCompetency > _dice.Roll(1, 12))
@@ -231,6 +255,111 @@ namespace Darkmoor
             {
                 _defenderState = CombatantState.COMBATANT_STATE_ELIMINATED;
             }
+        }
+
+        public void ResolveSurvivors(int startingNumbers, List<Civilization> army)
+        {
+            var unharmed = GetTotalCombatants(army);
+            var losses = startingNumbers - unharmed;
+            int result = _dice.Roll(1, 10);
+            int replacements;
+            if (result <= 3) { 
+                replacements = (int)(losses * 0.3); 
+            }
+            else if (result <= 5) { 
+                replacements = (int)(losses * 0.5); 
+            }
+            else if (result <= 7) { 
+                replacements = (int)(losses * 0.75); 
+            }
+            else if (result == 8) { 
+                replacements = losses; 
+            }
+            else if (result == 9) { 
+                replacements = losses + (int)(startingNumbers * 0.1); 
+            }
+            else
+            {
+                replacements = 0;
+            }
+
+            int unitReplacements = replacements / army.Count;
+
+            foreach(var unit in army)
+            {
+                unit.Patricians.Members += unitReplacements;
+            }
+        }
+
+        /// <summary>
+        /// The refugees civ searches the current hex for a similar race, and 
+        /// joins them if they find it.
+        /// </summary>
+        /// <param name="refugees"></param>
+        /// <param name="hex"></param>
+        /// <param name="homeName"></param>
+        /// <returns>Returns true if a sutible settlement was found, 
+        /// returns false if not.</returns>
+        bool RefugeesSearchHex(Civilization refugees, HexData hex, 
+            string homeName)
+        {
+            foreach(var lair in hex.LairList)
+            {
+                // can't keep the base they just lost.
+                if (lair.Name == homeName) { continue; }
+
+                // note it is interesting that a refugee group will not take up 
+                // in a ruins...
+                if (lair.IsRuins()) { continue; }
+
+                // search for a matching race in the hex
+                Civilization targetCiv = lair.HomeCiv;
+                if (targetCiv.Patricians.BaseAncestry.Name !=
+                    refugees.Patricians.BaseAncestry.Name)
+                {
+                    continue;
+                }
+
+                // found a match
+                targetCiv.JoinOurCivilization(refugees.GetFullName());
+                targetCiv.Patricians.Members += refugees.Patricians.Members;
+                refugees.DissolvePopulation();
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Losers of a battle will try to search their home hex for a like
+        /// race to join, or and adjacent hex if that fails.
+        /// If that fails, they are eliminated.
+        /// </summary>
+        /// <param name="losers"></param>
+        /// <param name="loserHome"></param>
+        /// <param name="baseName">The name of the home base that the refugees 
+        /// just left. They can't go back here.</param>
+        void MoveLosers(Civilization losers, HexData loserHome, 
+            string baseName)
+        {
+            bool isFoundHex = RefugeesSearchHex(losers, loserHome, baseName);
+            if (isFoundHex) { return; }
+            int nextIndex = _dice.Roll(1, 6);
+            bool isFound = false;
+            for (int i = 0; i < 6; ++i)
+            {
+                ++nextIndex;
+                if (nextIndex > 6) { nextIndex = 1; }
+                var nextCoords = loserHome.FindNeighborByIndex(nextIndex);
+                var nextHex = _worldMap.GetHexByCoordinates(nextCoords.Item1, 
+                    nextCoords.Item2); 
+                if (nextHex is null) { continue; }
+                isFound = RefugeesSearchHex(losers, nextHex, baseName);
+                if (isFound) { break; }
+            }
+            if (isFound) { return; }
+
+            // no available place to go!
+            losers.DissolvePopulation();
         }
     }
 }

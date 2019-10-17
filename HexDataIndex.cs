@@ -11,7 +11,7 @@ namespace Darkmoor
     /// </summary>
     class HexDataIndex
     {
-        private Dice _dice;
+        private readonly Dice _dice;
 
         public List<HexData> HexList = new List<HexData>();
 
@@ -36,6 +36,32 @@ namespace Darkmoor
             HexData hex = new HexData(_dice);
             hex.InitializeAsRandomHex(x, y);
             return hex;
+        }
+
+        public HexData GetHexByCoordinates(int x, int y)
+        {
+            foreach(var hex in HexList)
+            {
+                if (hex.XCoord == x && hex.YCoord == y) { return hex; }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// after battles, we remove the civilizations that have no members
+        /// left.
+        /// </summary>
+        public void CleanOutRuins()
+        {
+            foreach (var hex in HexList)
+            {
+                foreach (var lair in hex.LairList)
+                {
+                    if (lair.IsRuins()) { continue; }
+                    lair.AbandonIfEmpty();
+                }
+
+            }
         }
     }
 }
