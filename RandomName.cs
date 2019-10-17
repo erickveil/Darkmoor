@@ -84,6 +84,7 @@ namespace Darkmoor
             word = word.Replace("zch", "ch");
             word = word.Replace("fth", "th");
             word = word.Replace("cs", "ks");
+            word = word.Replace("zs", "zz");
 
             return word;
         }

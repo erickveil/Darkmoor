@@ -15,7 +15,7 @@ namespace Darkmoor
     /// </summary>
     class Lair
     {
-        const int SUB_HEXES = 88;
+        const int SUB_HEXES = 13;
 
         public string Name = "Unnamed";
         public string Type = "Cave";

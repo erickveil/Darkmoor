@@ -52,7 +52,6 @@ namespace Darkmoor
         public void ResolveBattle(HexData attackerLands, HexData defenderLands, 
             Lair attackerBase, Lair defenderBase)
         {
-            // TODO: check for if either lair is ruins for automatic winners
             if (attackerBase.IsRuins())
             {
                 // no attackers! do not pass!
@@ -69,6 +68,13 @@ namespace Darkmoor
                 return;
             }
             Civilization defender = defenderBase.HomeCiv;
+
+            string record = attacker.GetFullName() + " is attacking "
+                + defender.GetFullName() + " at " + defenderBase.GetFullName()
+                + "!";
+            attacker.History.addRecord(record);
+            defender.History.addRecord(record, isLogged: false);
+            defenderBase.History.addRecord(record, isLogged: false);
 
             GatherAttackers(attacker, attackerLands);
             GatherDefenders(defender, defenderLands);
@@ -91,6 +97,13 @@ namespace Darkmoor
             if (AttackerState == CombatantState.COMBATANT_STATE_RALLIED)
             {
                 // defender loses!
+                record = defender.GetFullName() + " has been defeated by "
+                    + attacker.GetFullName() + " at "
+                    + defenderBase.GetFullName() + "!";
+                attacker.History.addRecord(record);
+                defender.History.addRecord(record, isLogged: false);
+                defenderBase.History.addRecord(record, isLogged: false);
+
                 string defenderBaseName = defenderBase.Name;
                 MoveLosers(defender, defenderLands, defenderBaseName);
                 defenderBase.MoveCivIn(attacker);
@@ -99,6 +112,13 @@ namespace Darkmoor
             else if (DefenderState == CombatantState.COMBATANT_STATE_RALLIED)
             {
                 // attacker loses!
+                record = attacker.GetFullName() + " has been repelled by "
+                    + defender.GetFullName() + " at "
+                    + defenderBase.GetFullName() + "!";
+                attacker.History.addRecord(record);
+                defender.History.addRecord(record, isLogged: false);
+                defenderBase.History.addRecord(record, isLogged: false);
+
                 string attackerBaseName = attackerBase.Name;
                 // It's interesting that attackers don't go back home.
                 MoveLosers(attacker, attackerLands, attackerBaseName);
@@ -107,6 +127,16 @@ namespace Darkmoor
             else
             {
                 // mutual destruction is highly unlikely, but not impossible.
+                record = attacker.GetFullName() + " and "
+                    + defender.GetFullName()
+                    + " have achieved mutual destruction at "
+                    + defenderBase.GetFullName() + "!";
+                attacker.History.addRecord(record);
+                defender.History.addRecord(record, isLogged: false);
+                defenderBase.History.addRecord(record, isLogged: false);
+
+
+
                 attacker.DissolvePopulation();
                 defender.DissolvePopulation();
             }
@@ -123,10 +153,16 @@ namespace Darkmoor
         public void GatherAttackers(Civilization attacker, 
             HexData attackerHome)
         {
+            AttackerList.Add(attacker);
             foreach(var lair in attackerHome.LairList)
             {
                 if (lair.IsRuins()) { continue; }
                 if (lair.HomeCiv.GetFullName() == attacker.GetFullName())
+                {
+                    continue;
+                }
+                if (lair.HomeCiv.Patricians.BaseAncestry.Name 
+                    == attacker.Patricians.BaseAncestry.Name)
                 {
                     if (attacker.LeaderCompetency > _dice.Roll(1, 12))
                     {
@@ -144,10 +180,16 @@ namespace Darkmoor
         public void GatherDefenders(Civilization defender, 
             HexData defenderHome)
         {
+            DefenderList.Add(defender);
             foreach(var lair in defenderHome.LairList)
             {
                 if (lair.IsRuins()) { continue; }
                 if (lair.HomeCiv.GetFullName() == defender.GetFullName())
+                {
+                    continue;
+                }
+                if (lair.HomeCiv.Patricians.BaseAncestry.Name 
+                    == defender.Patricians.BaseAncestry.Name)
                 {
                     if (defender.LeaderCompetency > _dice.Roll(1, 12))
                     {
