@@ -33,7 +33,7 @@ namespace Darkmoor
 
         public HexData CreateRandomHex(int x, int y)
         {
-            HexData hex = new HexData(_dice);
+            HexData hex = new HexData(_dice, this);
             hex.InitializeAsRandomHex(x, y);
             return hex;
         }

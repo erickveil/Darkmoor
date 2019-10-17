@@ -13,14 +13,14 @@ namespace Darkmoor
         public List<Civilization> AttackerList = new List<Civilization>();
         public List<Civilization> DefenderList = new List<Civilization>();
 
-        private enum CombatantState { 
+        public enum CombatantState { 
             COMBATANT_STATE_RALLIED, COMBATANT_STATE_ROUTED, 
             COMBATANT_STATE_ELIMINATED
         };
 
-        private CombatantState _attackerState = 
+        public CombatantState AttackerState = 
             CombatantState.COMBATANT_STATE_RALLIED;
-        private CombatantState _defenderState = 
+        public CombatantState DefenderState = 
             CombatantState.COMBATANT_STATE_RALLIED;
 
         private int _attackerStartingForces;
@@ -30,16 +30,46 @@ namespace Darkmoor
 
         readonly Dice _dice;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="dice"></param>
+        /// <param name="worldMap"></param>
         public Battle(Dice dice, HexDataIndex worldMap)
         {
             _dice = dice;
             _worldMap = worldMap;
         }
 
-        public void ResolveBattle(Civilization attacker, HexData attackerLands,
-            Civilization defender, HexData defenderLands, Lair attackerBase,
-            Lair defenderBase)
+        /// <summary>
+        /// The main battle resolution
+        /// Combatants must come from a lair in a hex.
+        /// </summary>
+        /// <param name="attackerLands"></param>
+        /// <param name="defenderLands"></param>
+        /// <param name="attackerBase"></param>
+        /// <param name="defenderBase"></param>
+        public void ResolveBattle(HexData attackerLands, HexData defenderLands, 
+            Lair attackerBase, Lair defenderBase)
         {
+            // TODO: check for if either lair is ruins for automatic winners
+            if (attackerBase.IsRuins())
+            {
+                // no attackers! do not pass!
+                AttackerState = CombatantState.COMBATANT_STATE_ELIMINATED;
+                return;
+            }
+            Civilization attacker = attackerBase.HomeCiv;
+
+            if (defenderBase.IsRuins())
+            {
+                defenderBase.MoveCivIn(attacker);
+                attackerBase.ForceAbandon();
+                DefenderState = CombatantState.COMBATANT_STATE_ELIMINATED;
+                return;
+            }
+            Civilization defender = defenderBase.HomeCiv;
+
             GatherAttackers(attacker, attackerLands);
             GatherDefenders(defender, defenderLands);
             _attackerStartingForces = GetTotalCombatants(AttackerList);
@@ -49,8 +79,8 @@ namespace Darkmoor
             {
                 ExecuteBattleRound();
             } while (
-            (_attackerState == CombatantState.COMBATANT_STATE_RALLIED) && 
-            (_defenderState == CombatantState.COMBATANT_STATE_RALLIED)
+            (AttackerState == CombatantState.COMBATANT_STATE_RALLIED) && 
+            (DefenderState == CombatantState.COMBATANT_STATE_RALLIED)
             );
 
             // recover from battle
@@ -58,7 +88,7 @@ namespace Darkmoor
             ResolveSurvivors(_defenderStartingForces, DefenderList);
 
             // TODO: determine outcome of battle.
-            if (_attackerState == CombatantState.COMBATANT_STATE_RALLIED)
+            if (AttackerState == CombatantState.COMBATANT_STATE_RALLIED)
             {
                 // defender loses!
                 string defenderBaseName = defenderBase.Name;
@@ -66,7 +96,7 @@ namespace Darkmoor
                 defenderBase.MoveCivIn(attacker);
                 attackerBase.ForceAbandon();
             }
-            else if (_defenderState == CombatantState.COMBATANT_STATE_RALLIED)
+            else if (DefenderState == CombatantState.COMBATANT_STATE_RALLIED)
             {
                 // attacker loses!
                 string attackerBaseName = attackerBase.Name;
@@ -85,6 +115,11 @@ namespace Darkmoor
             _worldMap.CleanOutRuins();
         }
 
+        /// <summary>
+        /// attackers gather any like race allied they can muster in the hex
+        /// </summary>
+        /// <param name="attacker"></param>
+        /// <param name="attackerHome"></param>
         public void GatherAttackers(Civilization attacker, 
             HexData attackerHome)
         {
@@ -101,6 +136,11 @@ namespace Darkmoor
             }
         }
 
+        /// <summary>
+        /// Defenders gather any like allied forces they can muster in the hex
+        /// </summary>
+        /// <param name="defender"></param>
+        /// <param name="defenderHome"></param>
         public void GatherDefenders(Civilization defender, 
             HexData defenderHome)
         {
@@ -117,6 +157,11 @@ namespace Darkmoor
             }
         }
 
+        /// <summary>
+        /// Tally up the total forces on a side
+        /// </summary>
+        /// <param name="allianceList"></param>
+        /// <returns></returns>
         public int GetTotalCombatants(List<Civilization> allianceList)
         {
             int total = 0;
@@ -127,6 +172,9 @@ namespace Darkmoor
             return total;
         }
 
+        /// <summary>
+        /// Run a single round of combat
+        /// </summary>
         public void ExecuteBattleRound()
         {
             // TODO: should these calculations be performaed by the population obj?
@@ -223,11 +271,11 @@ namespace Darkmoor
                 if (GetTotalCombatants(AttackerList) 
                     <= _attackerStartingForces / 3)
                 {
-                    _attackerState = CombatantState.COMBATANT_STATE_ROUTED;
+                    AttackerState = CombatantState.COMBATANT_STATE_ROUTED;
                 }
                 else if (moraleRoll < 10)
                 {
-                    _attackerState = CombatantState.COMBATANT_STATE_ROUTED;
+                    AttackerState = CombatantState.COMBATANT_STATE_ROUTED;
                 }
             }
             else if (defenderUnitLosses < attackerUnitLosses)
@@ -236,11 +284,11 @@ namespace Darkmoor
                 if (GetTotalCombatants(DefenderList)
                     <= _defenderStartingForces / 3)
                 {
-                    _defenderState = CombatantState.COMBATANT_STATE_ROUTED;
+                    DefenderState = CombatantState.COMBATANT_STATE_ROUTED;
                 }
                 else if (moraleRoll < 10)
                 {
-                    _defenderState = CombatantState.COMBATANT_STATE_ROUTED;
+                    DefenderState = CombatantState.COMBATANT_STATE_ROUTED;
                 }
 
             }
@@ -249,14 +297,19 @@ namespace Darkmoor
             // Very unlikely, but check for genocide
             if (GetTotalCombatants(AttackerList) == 0)
             {
-                _attackerState = CombatantState.COMBATANT_STATE_ELIMINATED;
+                AttackerState = CombatantState.COMBATANT_STATE_ELIMINATED;
             }
             if (GetTotalCombatants(DefenderList) == 0)
             {
-                _defenderState = CombatantState.COMBATANT_STATE_ELIMINATED;
+                DefenderState = CombatantState.COMBATANT_STATE_ELIMINATED;
             }
         }
 
+        /// <summary>
+        /// Not all who fall in battle are lost
+        /// </summary>
+        /// <param name="startingNumbers"></param>
+        /// <param name="army"></param>
         public void ResolveSurvivors(int startingNumbers, List<Civilization> army)
         {
             var unharmed = GetTotalCombatants(army);

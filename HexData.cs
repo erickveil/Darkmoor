@@ -22,12 +22,24 @@ namespace Darkmoor
         public HistoryLog History = new HistoryLog();
 
         readonly Dice _dice;
+        private readonly HexDataIndex _worldMap;
 
-        public HexData(Dice dice)
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="dice"></param>
+        /// <param name="worldMap"></param>
+        public HexData(Dice dice, HexDataIndex worldMap)
         {
             _dice = dice;
+            _worldMap = worldMap;
         }
 
+        /// <summary>
+        /// Sets this hex up with random components
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
         public void InitializeAsRandomHex(int x, int y)
         {
             var nameGen = new RandomName(_dice);
@@ -41,7 +53,21 @@ namespace Darkmoor
             {
                 var lair = new Lair(_dice);
                 lair.InitializeAsRandomLair();
-                LairList.Add(lair);
+                // resolve any conflicting locations
+                Battle results = ResolveSettlementConflicts(lair);
+                if (results is null)
+                {
+                    // there was no battle. Just add the new lair.
+                    LairList.Add(lair);
+                    continue;
+                }
+                if ((results.AttackerState == Battle.CombatantState.COMBATANT_STATE_ELIMINATED)
+                    || (results.AttackerState == Battle.CombatantState.COMBATANT_STATE_ROUTED))
+                {
+                    // dont even save the lair.
+                    continue;
+                }
+                // attackers win, and are moved into existing lair.
             }
 
             string record = Name + " (" + x + ", " + y 
@@ -67,6 +93,14 @@ namespace Darkmoor
             History.addRecord(record);
         }
 
+        /// <summary>
+        /// Do a serarch for neighboring hexes.
+        /// Hexes are assumed to be flat bottomed, with the origin situated
+        /// in the center.
+        /// </summary>
+        /// <param name="index">Numbers 0-6. 0 is self, 1 is north, 2 is NE,
+        /// 3 is SE, 4 is south, 5 is SW, and anything else is NW</param>
+        /// <returns>The HexData coordinates of the neighboring hex</returns>
         public Tuple<int, int> FindNeighborByIndex(int index)
         {
             switch(index)
@@ -107,6 +141,35 @@ namespace Darkmoor
                     lair.HomeCiv.JoinOurCivilization(otherLair.HomeCiv.CulturalIdentity);
                 }
             }
+        }
+
+        /// <summary>
+        /// If two civilizations spawn in the same area, they must fight to
+        /// determine who may settle there.
+        /// </summary>
+        /// <param name="newLair">the challenger to the conflict</param>
+        /// <returns>Battle object holds the state results of the conflict. If 
+        /// the spot is not challenged at all, then null is returned.
+        /// </returns>
+        private Battle ResolveSettlementConflicts(Lair newLair)
+        {
+            foreach(var lair in LairList)
+            {
+                if (newLair.SubhexIndex != lair.SubhexIndex) { continue; }
+                var battle = new Battle(_dice, _worldMap);
+                battle.ResolveBattle(this, this, newLair, lair);
+                return battle;
+            }
+            return null;
+        }
+
+        public Lair GetLairAtLocation(int subHexIndex)
+        {
+            foreach(var lair in LairList)
+            {
+                if (lair.SubhexIndex == subHexIndex) { return lair; }
+            }
+            return null;
         }
 
     }

@@ -15,12 +15,13 @@ namespace Darkmoor
     /// </summary>
     class Lair
     {
+        const int SUB_HEXES = 88;
+
         public string Name = "Unnamed";
         public string Type = "Cave";
         public Civilization HomeCiv;
         public int SubhexIndex = 0;
         public HistoryLog History = new HistoryLog();
-
 
         private readonly Dice _dice;
 
@@ -57,7 +58,7 @@ namespace Darkmoor
             HomeCiv = civ;
 
             // Location in hex
-            SubhexIndex = _dice.RandomNumber(1, 88);
+            SubhexIndex = _dice.RandomNumber(1, SUB_HEXES);
 
             string record = Name + " " + Type + " has been founded by the " 
                 + RandomName.Pluralize(HomeCiv.GetFullName()) + " in area "
@@ -71,7 +72,13 @@ namespace Darkmoor
         /// <returns></returns>
         public string GetFullName()
         {
-            return Name + " " + Type;
+            string name = "";
+            if (IsRuins())
+            {
+                name = "The Ruins of ";
+            }
+            name += Name + " " + Type;
+            return name;
         }
 
         public bool IsRuins()
