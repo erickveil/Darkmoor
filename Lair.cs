@@ -18,7 +18,7 @@ namespace Darkmoor
         public string Name = "Unnamed";
         public string Type = "Cave";
         public Civilization HomeCiv;
-        public int MileHexIndex = 0;
+        public int SubhexIndex = 0;
         public HistoryLog History = new HistoryLog();
 
 
@@ -57,10 +57,11 @@ namespace Darkmoor
             HomeCiv = civ;
 
             // Location in hex
-            MileHexIndex = _dice.RandomNumber(1, 132);
+            SubhexIndex = _dice.RandomNumber(1, 88);
 
             string record = Name + " " + Type + " has been founded by the " 
-                + RandomName.Pluralize(HomeCiv.GetFullName());
+                + RandomName.Pluralize(HomeCiv.GetFullName()) + " in area "
+                + SubhexIndex;
             History.addRecord(record);
         }
 

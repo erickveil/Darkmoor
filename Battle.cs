@@ -70,7 +70,10 @@ namespace Darkmoor
             {
                 if (lair.HomeCiv.GetFullName() == attacker.GetFullName())
                 {
-                    AttackerList.Add(lair.HomeCiv);
+                    if (attacker.LeaderCompetency > _dice.Roll(1, 12))
+                    {
+                        AttackerList.Add(lair.HomeCiv);
+                    }
                 }
             }
         }
@@ -82,7 +85,10 @@ namespace Darkmoor
             {
                 if (lair.HomeCiv.GetFullName() == defender.GetFullName())
                 {
-                    DefenderList.Add(lair.HomeCiv);
+                    if (defender.LeaderCompetency > _dice.Roll(1, 12))
+                    {
+                        DefenderList.Add(lair.HomeCiv);
+                    }
                 }
             }
         }

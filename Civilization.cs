@@ -18,6 +18,7 @@ namespace Darkmoor
         public string CulturalIdentity = "Unnamed";
         public Population Patricians;
         public HistoryLog History = new HistoryLog();
+        public int LeaderCompetency = 0;
 
         private readonly Dice _dice;
 
@@ -41,6 +42,8 @@ namespace Darkmoor
             var founders = new Population(_dice);
             founders.InitializeAsRandomPop();
             Patricians = founders;
+
+            LeaderCompetency = (_dice.Roll(2, 6) / 2);
 
             string record = "The " + GetFullName() 
                 + " Civilization has emerged, with a starting population of "
