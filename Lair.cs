@@ -19,6 +19,7 @@ namespace Darkmoor
         public string Name = "Unnamed";
         public string Type = "Cave";
         public Civilization HomeCiv;
+        public HexData HomeHex;
         public int SubhexIndex = 0;
         public HistoryLog History = new HistoryLog();
 
@@ -36,7 +37,7 @@ namespace Darkmoor
         /// <summary>
         /// Builds a random civ as founders, and creates the lair
         /// </summary>
-        public void InitializeAsRandomLair(string hexName)
+        public void InitializeAsRandomLair(HexData hex)
         {
             var nameGen = new RandomName(_dice);
             Name = nameGen.CreateWord();
@@ -46,8 +47,10 @@ namespace Darkmoor
             var civ = new Civilization(_dice);
             civ.InitializeAsRandomCiv();
             HomeCiv = civ;
+            HomeHex = hex;
 
             SubhexIndex = _dice.RandomNumber(1, HexData.SUB_HEXES);
+            var hexName = hex.getNameWithLoc();
             _recordFounding(civ, hexName);
         }
 
@@ -56,13 +59,15 @@ namespace Darkmoor
         /// </summary>
         /// <param name="settlers"></param>
         public void InitializeAsSettlerLair(Civilization settlers, 
-            int subHexIndex, string hexName)
+            int subHexIndex, HexData hex)
         {
             var nameGen = new RandomName(_dice);
             Name = nameGen.CreateWord();
             _setRandomLairType();
             HomeCiv = settlers;
             SubhexIndex = subHexIndex;
+            HomeHex = hex;
+            var hexName = hex.getNameWithLoc();
             _recordFounding(settlers, hexName);
         }
 

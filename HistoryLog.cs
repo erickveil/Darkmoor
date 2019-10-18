@@ -13,9 +13,16 @@ namespace Darkmoor
     class HistoryLog
     {
         List<string> _historyList = new List<string>();
+        GameTime _timeObj;
+
+        public HistoryLog()
+        {
+            _timeObj = GameTime.Instance;
+        }
 
         public void addRecord(string record, bool isLogged = true)
         {
+            record = _timeObj.GetDateString() + ": " + record;
             _historyList.Add(record);
             if (isLogged)
             {

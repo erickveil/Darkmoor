@@ -57,6 +57,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="GameTime.cs" />
     <Compile Include="HexData.cs" />
     <Compile Include="HexDataIndex.cs" />
     <Compile Include="HistoryLog.cs" />

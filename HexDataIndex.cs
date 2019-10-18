@@ -13,11 +13,15 @@ namespace Darkmoor
     {
         private readonly Dice _dice;
 
+
+        public GameTime TimeObj;
         public List<HexData> HexList = new List<HexData>();
 
         public HexDataIndex(Dice dice)
         {
             _dice = dice;
+            TimeObj = GameTime.Instance;
+            TimeObj.Init(_dice);
         }
 
         public void GenerateWorld(int width, int height)
@@ -101,10 +105,12 @@ namespace Darkmoor
 
             // internal migrations
             // todo: these should be resolved via date initiative settlement
+            migration.ClearMigrationSchedule();
             foreach (var hex in HexList)
             {
-                migration.ResolveInternalMigrations(hex);
+                migration.QueueMigrations(hex);
             }
+            migration.ResolveQueuedMigrations();
             
         }
 

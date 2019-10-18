@@ -47,8 +47,7 @@ namespace Darkmoor
             {
                 // no battle. settle in unclaimed land.
                 var lair = new Lair(_dice);
-                lair.InitializeAsSettlerLair(invaders, subHexLoc, 
-                    hex.getNameWithLoc());
+                lair.InitializeAsSettlerLair(invaders, subHexLoc, hex);
                 hex.LairList.Add(lair);
                 return;
             }
@@ -65,7 +64,7 @@ namespace Darkmoor
             // else the invaders win, and have been moved into their new lair.
         }
 
-        public void ResolveInternalMigrations(HexData hex)
+        public void QueueMigrations(HexData hex)
         {
             // isolated hexes can't migrate
             // (prevents infinite loop when searching)
@@ -73,7 +72,6 @@ namespace Darkmoor
             if (outerEdges >= 6) { return; }
 
             // arrange migration schedule
-            _clearMigrationSchedule();
             foreach (var lair in hex.LairList)
             {
                 // 15% chance for internal civs to migrate
@@ -86,27 +84,39 @@ namespace Darkmoor
                 else if (monthRoll <= 5) { _aprilMigrations[dayRoll] = lair; }
                 else { _marchMigrations[dayRoll] = lair; }
             }
+        }
 
+        public void ResolveQueuedMigrations()
+        {
             // execute migrations in order
             // March
+            _worldMap.TimeObj.Month = 3;
+            _worldMap.TimeObj.Day = 0;
             foreach (var lair in _marchMigrations)
             {
+                ++_worldMap.TimeObj.Day;
                 if (lair is null) { continue; }
-                _doMigration(lair, hex);
+                _doMigration(lair, lair.HomeHex);
             }
 
             // April
+            _worldMap.TimeObj.Month = 4;
+            _worldMap.TimeObj.Day = 0;
             foreach (var lair in _aprilMigrations)
             {
+                ++_worldMap.TimeObj.Day;
                 if (lair is null) { continue; }
-                _doMigration(lair, hex);
+                _doMigration(lair, lair.HomeHex);
             }
 
             // May
+            _worldMap.TimeObj.Month = 5;
+            _worldMap.TimeObj.Day = 0;
             foreach (var lair in _mayMigrations)
             {
+                ++_worldMap.TimeObj.Day;
                 if (lair is null) { continue; }
-                _doMigration(lair, hex);
+                _doMigration(lair, lair.HomeHex);
             }
         }
 
@@ -135,7 +145,7 @@ namespace Darkmoor
                 // Free real estate!
                 var newLair = new Lair(_dice);
                 newLair.InitializeAsSettlerLair(lair.HomeCiv, subHexIndex,
-                    targetHex.getNameWithLoc());
+                    targetHex);
                 targetHex.LairList.Add(newLair);
                 lair.ForceAbandon();
                 return;
@@ -167,7 +177,7 @@ namespace Darkmoor
             return null;
         }
 
-        private void _clearMigrationSchedule()
+        public void ClearMigrationSchedule()
         {
             _marchMigrations.Clear();
             _aprilMigrations.Clear();

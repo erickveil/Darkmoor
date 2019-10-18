@@ -54,7 +54,7 @@ namespace Darkmoor
             for (int i = 0; i < numLairs; ++i)
             {
                 var lair = new Lair(_dice);
-                lair.InitializeAsRandomLair(getNameWithLoc());
+                lair.InitializeAsRandomLair(this);
                 // resolve any conflicting locations
                 Battle results = ResolveSettlementConflicts(lair);
                 if (results is null)

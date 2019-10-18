@@ -29,6 +29,9 @@ namespace Darkmoor
 
         private void bu_newYear_Click(object sender, EventArgs e)
         {
+            ++_worldMap.TimeObj.Year;
+            _worldMap.TimeObj.Month = 1;
+            _worldMap.TimeObj.Day = 1;
             _worldMap.IncreaseAllPopulations();
             _worldMap.ResolveAllMigrations();
 
