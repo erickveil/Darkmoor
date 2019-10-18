@@ -29,6 +29,7 @@ namespace Darkmoor
 
         private void bu_newYear_Click(object sender, EventArgs e)
         {
+            _worldMap.IncreaseAllPopulations();
             _worldMap.ResolveAllMigrations();
 
         }

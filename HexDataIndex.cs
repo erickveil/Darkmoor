@@ -107,5 +107,17 @@ namespace Darkmoor
             }
             
         }
+
+        public void IncreaseAllPopulations()
+        {
+            foreach (var hex in HexList)
+            {
+                foreach(var lair in hex.LairList)
+                {
+                    if (lair.IsRuins()) { continue; }
+                    lair.HomeCiv.IncreasePopulation();
+                }
+            }
+        }
     }
 }

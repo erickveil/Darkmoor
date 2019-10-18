@@ -627,6 +627,10 @@ namespace Darkmoor
             if (isFound) { return; }
 
             // no available place to go!
+            string report = "The " + losers.GetPluralName()
+                + " could not find refuge.";
+            losers.History.addRecord(report);
+
             losers.DissolvePopulation();
         }
     }

@@ -63,7 +63,7 @@ namespace Darkmoor
                 + " have been assimilated into the " + otherCivName 
                 + " Civilization.";
             CulturalIdentity = otherCivName;
-            History.addRecord(record);
+            History.addRecord(record, isLogged: false);
         }
         
         /// <summary>
@@ -76,7 +76,7 @@ namespace Darkmoor
             string record = RandomName.Pluralize(GetFullName())
                 + " have assimilated the " + otherCivName 
                 + " Civilization.";
-            History.addRecord(record, isLogged: false);
+            History.addRecord(record, isLogged: true);
         }
 
         /// <summary>
@@ -99,6 +99,23 @@ namespace Darkmoor
             Patricians.Members = 0;
             string record = "The " + RandomName.Pluralize(GetFullName()) 
                 + " have disbanded.";
+            History.addRecord(record);
+        }
+
+        public void IncreasePopulation()
+        {
+            int percentIncrease = _dice.Roll(1, 10) + 5;
+            double increaseMultiplier = percentIncrease * 0.01;
+            
+            int numNewPatricians = 
+                (int)Math.Round(Patricians.Members * increaseMultiplier);
+
+            Patricians.Members += numNewPatricians;
+            string record = "The " + GetPluralName()
+                + " census shows a population increase of " + numNewPatricians
+                + " (" + percentIncrease
+                + "%) among the patricians. The new population count is "
+                + Patricians.Members;
             History.addRecord(record);
         }
     }
