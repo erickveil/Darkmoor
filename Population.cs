@@ -20,6 +20,7 @@ namespace Darkmoor
         public int ToHitMod = 0;
         public int BonusAttacks = 0;
         public int HitDiceBonus = 0;
+        public int MoraleBonus = 0;
         public string Rank = "Patrician";
         public HistoryLog History = new HistoryLog();
 

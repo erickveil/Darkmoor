@@ -27,5 +27,6 @@ namespace Darkmoor
         public int BaseToHit;
         public int BaseNumAttacks;
         public int HitDice;
+        public int MoraleBonus;
     }
 }

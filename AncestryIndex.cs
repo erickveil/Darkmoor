@@ -37,6 +37,7 @@ namespace Darkmoor
                 ancestryObj.BaseToHit = 0;
                 ancestryObj.BaseNumAttacks = 1;
                 ancestryObj.HitDice = 1;
+                ancestryObj.MoraleBonus = 0;
                 _ancestryTable.AddItem(ancestryObj);
             }
         }

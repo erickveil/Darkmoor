@@ -480,6 +480,11 @@ namespace Darkmoor
 
             // determine loser and check morale...
             int moraleRoll = _dice.Roll(1, 20);
+            int attackMoraleBonus = AttackerList[0].Patricians.MoraleBonus +
+                AttackerList[0].Patricians.BaseAncestry.MoraleBonus;
+            int defenseMoraleBonus = DefenderList[0].Patricians.MoraleBonus +
+                DefenderList[0].Patricians.BaseAncestry.MoraleBonus;
+
             if (_defenderScore > _attackerScore)
             {
                 // attacker losing
@@ -488,7 +493,7 @@ namespace Darkmoor
                 {
                     AttackerState = CombatantState.COMBATANT_STATE_ROUTED;
                 }
-                else if (moraleRoll < 10)
+                else if ((moraleRoll + attackMoraleBonus) < 10)
                 {
                     AttackerState = CombatantState.COMBATANT_STATE_ROUTED;
                 }
@@ -501,7 +506,7 @@ namespace Darkmoor
                 {
                     DefenderState = CombatantState.COMBATANT_STATE_ROUTED;
                 }
-                else if (moraleRoll < 10)
+                else if ((moraleRoll + defenseMoraleBonus) < 10)
                 {
                     DefenderState = CombatantState.COMBATANT_STATE_ROUTED;
                 }
