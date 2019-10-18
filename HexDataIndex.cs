@@ -47,6 +47,11 @@ namespace Darkmoor
             return null;
         }
 
+        public HexData GetHexByCoordinates(Tuple<int, int> coords)
+        {
+            return GetHexByCoordinates(coords.Item1, coords.Item2);
+        }
+
         /// <summary>
         /// after battles, we remove the civilizations that have no members
         /// left.
@@ -94,7 +99,12 @@ namespace Darkmoor
                 migration.ResolveOutsideSingleHexMigration(hex);
             }
 
-            // todo: resolve internal migrations
+            // internal migrations
+            // todo: these should be resolved via date initiative settlement
+            foreach (var hex in HexList)
+            {
+                migration.ResolveInternalMigrations(hex);
+            }
             
         }
     }
