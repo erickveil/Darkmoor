@@ -36,7 +36,7 @@ namespace Darkmoor
         /// <summary>
         /// Builds a random civ as founders, and creates the lair
         /// </summary>
-        public void InitializeAsRandomLair()
+        public void InitializeAsRandomLair(string hexName)
         {
             var nameGen = new RandomName(_dice);
             Name = nameGen.CreateWord();
@@ -48,7 +48,7 @@ namespace Darkmoor
             HomeCiv = civ;
 
             SubhexIndex = _dice.RandomNumber(1, HexData.SUB_HEXES);
-            _recordFounding(civ);
+            _recordFounding(civ, hexName);
         }
 
         /// <summary>
@@ -56,24 +56,24 @@ namespace Darkmoor
         /// </summary>
         /// <param name="settlers"></param>
         public void InitializeAsSettlerLair(Civilization settlers, 
-            int subHexIndex)
+            int subHexIndex, string hexName)
         {
             var nameGen = new RandomName(_dice);
             Name = nameGen.CreateWord();
             _setRandomLairType();
             HomeCiv = settlers;
             SubhexIndex = subHexIndex;
-            _recordFounding(settlers);
+            _recordFounding(settlers, hexName);
         }
 
         /// <summary>
         /// Add the founding of this lair to its history.
         /// </summary>
-        private void _recordFounding(Civilization founders)
+        private void _recordFounding(Civilization founders, string hexName)
         {
             string record = Name + " " + Type + " has been founded by the " 
                 + RandomName.Pluralize(HomeCiv.GetFullName()) + " in area "
-                + SubhexIndex;
+                + SubhexIndex + " of " + hexName;
             History.addRecord(record);
             founders.History.addRecord(record, isLogged: false);
         }

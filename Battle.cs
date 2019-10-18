@@ -74,7 +74,7 @@ namespace Darkmoor
             Civilization defender = defenderBase.HomeCiv;
 
             string record = "The " 
-                + attacker.GetPluralName() + " is attacking the "
+                + attacker.GetPluralName() + " are attacking the "
                 + defender.GetPluralName() + " at " 
                 + defenderBase.GetFullName() + "!";
             attacker.History.addRecord(record);

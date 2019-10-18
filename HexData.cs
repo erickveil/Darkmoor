@@ -54,7 +54,7 @@ namespace Darkmoor
             for (int i = 0; i < numLairs; ++i)
             {
                 var lair = new Lair(_dice);
-                lair.InitializeAsRandomLair();
+                lair.InitializeAsRandomLair(getNameWithLoc());
                 // resolve any conflicting locations
                 Battle results = ResolveSettlementConflicts(lair);
                 if (results is null)
@@ -148,6 +148,11 @@ namespace Darkmoor
                 if (lair.SubhexIndex == subHexIndex) { return lair; }
             }
             return null;
+        }
+
+        public string getNameWithLoc()
+        {
+            return Name + "(" + XCoord + ", " + YCoord + ")";
         }
 
     }
