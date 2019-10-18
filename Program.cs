@@ -16,11 +16,6 @@ namespace Darkmoor
         {
             Console.WriteLine("Starting...");
 
-            var dice = new Dice();
-
-            var worldMap = new HexDataIndex(dice);
-            worldMap.GenerateWorld(3, 3);
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
