@@ -475,14 +475,14 @@ namespace Darkmoor
                 }
             }
 
-            _attackerScore = attackerCasualties;
-            _defenderScore = defenderCasualties;
+            _attackerScore += defenderCasualties;
+            _defenderScore += attackerCasualties;
 
             // determine loser and check morale...
             int moraleRoll = _dice.Roll(1, 20);
-            if (attackerCasualties< defenderCasualties)
+            if (_defenderScore > _attackerScore)
             {
-                // attacker lost 
+                // attacker losing
                 if (GetTotalCombatants(AttackerList) 
                     <= _attackerStartingForces / 3)
                 {
@@ -493,9 +493,9 @@ namespace Darkmoor
                     AttackerState = CombatantState.COMBATANT_STATE_ROUTED;
                 }
             }
-            else if (defenderUnitLosses < attackerUnitLosses)
+            else if (_attackerScore > _defenderScore)
             {
-                // defender lost
+                // defender losing
                 if (GetTotalCombatants(DefenderList)
                     <= _defenderStartingForces / 3)
                 {
