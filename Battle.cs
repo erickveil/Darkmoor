@@ -23,8 +23,12 @@ namespace Darkmoor
         public CombatantState DefenderState = 
             CombatantState.COMBATANT_STATE_RALLIED;
 
+        public int NumRounds;
+
         private int _attackerStartingForces;
         private int _defenderStartingForces;
+        private int _attackerScore;
+        private int _defenderScore;
 
         private readonly HexDataIndex _worldMap;
 
@@ -69,9 +73,10 @@ namespace Darkmoor
             }
             Civilization defender = defenderBase.HomeCiv;
 
-            string record = attacker.GetFullName() + " is attacking "
-                + defender.GetFullName() + " at " + defenderBase.GetFullName()
-                + "!";
+            string record = "The " 
+                + attacker.GetPluralName() + " is attacking the "
+                + defender.GetPluralName() + " at " 
+                + defenderBase.GetFullName() + "!";
             attacker.History.addRecord(record);
             defender.History.addRecord(record, isLogged: false);
             defenderBase.History.addRecord(record, isLogged: false);
@@ -81,28 +86,20 @@ namespace Darkmoor
             _attackerStartingForces = GetTotalCombatants(AttackerList);
             _defenderStartingForces = GetTotalCombatants(DefenderList);
 
-            do
-            {
-                ExecuteBattleRound();
-            } while (
-            (AttackerState == CombatantState.COMBATANT_STATE_RALLIED) && 
-            (DefenderState == CombatantState.COMBATANT_STATE_RALLIED)
-            );
+            _executeMainBattleLoop();
 
             // recover from battle
             ResolveSurvivors(_attackerStartingForces, AttackerList);
             ResolveSurvivors(_defenderStartingForces, DefenderList);
 
-            // TODO: determine outcome of battle.
+            // determine outcome of battle.
             if (AttackerState == CombatantState.COMBATANT_STATE_RALLIED)
             {
                 // defender loses!
-                record = defender.GetFullName() + " has been defeated by "
-                    + attacker.GetFullName() + " at "
+                record = "The " 
+                    + defender.GetPluralName() + " have been defeated by the "
+                    + attacker.GetPluralName() + " at "
                     + defenderBase.GetFullName() + "!";
-                attacker.History.addRecord(record);
-                defender.History.addRecord(record, isLogged: false);
-                defenderBase.History.addRecord(record, isLogged: false);
 
                 string defenderBaseName = defenderBase.Name;
                 MoveLosers(defender, defenderLands, defenderBaseName);
@@ -112,13 +109,48 @@ namespace Darkmoor
             else if (DefenderState == CombatantState.COMBATANT_STATE_RALLIED)
             {
                 // attacker loses!
-                record = attacker.GetFullName() + " has been repelled by "
-                    + defender.GetFullName() + " at "
+                record = "The " 
+                    + attacker.GetPluralName() + " have been repelled by the "
+                    + defender.GetPluralName() + " at "
                     + defenderBase.GetFullName() + "!";
-                attacker.History.addRecord(record);
-                defender.History.addRecord(record, isLogged: false);
-                defenderBase.History.addRecord(record, isLogged: false);
 
+                string attackerBaseName = attackerBase.Name;
+                // It's interesting that attackers don't go back home.
+                MoveLosers(attacker, attackerLands, attackerBaseName);
+                attackerBase.ForceAbandon();
+            }
+            else if (AttackerState == CombatantState.COMBATANT_STATE_ROUTED)
+            {
+                if (DefenderState == CombatantState.COMBATANT_STATE_ELIMINATED)
+                {
+                    // defenders lose
+                    record = "The " 
+                        + defender.GetPluralName() 
+                        + " have been defeated by the "
+                        + attacker.GetPluralName() + " at "
+                        + defenderBase.GetFullName() + "!";
+                    string defenderBaseName = defenderBase.Name;
+                    MoveLosers(defender, defenderLands, defenderBaseName);
+                    defenderBase.MoveCivIn(attacker);
+                    attackerBase.ForceAbandon();
+                }
+                // attackers lose
+                record = "The " 
+                    + attacker.GetPluralName() + " have been repelled by the "
+                    + defender.GetPluralName() + " at "
+                    + defenderBase.GetFullName() + "!";
+                string attackerBaseName = attackerBase.Name;
+                // It's interesting that attackers don't go back home.
+                MoveLosers(attacker, attackerLands, attackerBaseName);
+                attackerBase.ForceAbandon();
+            }
+            else if (DefenderState == CombatantState.COMBATANT_STATE_ROUTED)
+            {
+                // attackers are not rallied, so they lose by default.
+                record = "The " 
+                    + attacker.GetPluralName() + " have been repelled by the "
+                    + defender.GetPluralName() + " at "
+                    + defenderBase.GetFullName() + "!";
                 string attackerBaseName = attackerBase.Name;
                 // It's interesting that attackers don't go back home.
                 MoveLosers(attacker, attackerLands, attackerBaseName);
@@ -127,22 +159,166 @@ namespace Darkmoor
             else
             {
                 // mutual destruction is highly unlikely, but not impossible.
-                record = attacker.GetFullName() + " and "
-                    + defender.GetFullName()
+                record = "The "
+                    + attacker.GetPluralName() + " and the "
+                    + defender.GetPluralName()
                     + " have achieved mutual destruction at "
                     + defenderBase.GetFullName() + "!";
-                attacker.History.addRecord(record);
-                defender.History.addRecord(record, isLogged: false);
-                defenderBase.History.addRecord(record, isLogged: false);
-
-
 
                 attacker.DissolvePopulation();
                 defender.DissolvePopulation();
             }
 
+            _recordBattleReport(record, attacker, defender, defenderBase);
+
             // any lingering civs with zero population are removed.
             _worldMap.CleanOutRuins();
+        }
+
+        /// <summary>
+        /// Overloaded function for determining battles started by outside
+        /// or homeless invaders.
+        /// </summary>
+        /// <param name="attacker"></param>
+        /// <param name="defenderLands"></param>
+        /// <param name="defenderBase"></param>
+        public void ResolveBattle(Civilization attacker, HexData defenderLands, 
+            Lair defenderBase)
+        {
+            if (defenderBase.IsRuins())
+            {
+                defenderBase.MoveCivIn(attacker);
+                DefenderState = CombatantState.COMBATANT_STATE_ELIMINATED;
+                return;
+            }
+            Civilization defender = defenderBase.HomeCiv;
+
+            string record = "The " 
+                + attacker.GetPluralName() 
+                + " are attacking the "
+                + defender.GetPluralName() + " at " 
+                + defenderBase.GetFullName()
+                + "!";
+            attacker.History.addRecord(record);
+            defender.History.addRecord(record, isLogged: false);
+            defenderBase.History.addRecord(record, isLogged: false);
+
+            AttackerList.Add(attacker);
+            GatherDefenders(defender, defenderLands);
+            _attackerStartingForces = GetTotalCombatants(AttackerList);
+            _defenderStartingForces = GetTotalCombatants(DefenderList);
+
+            _executeMainBattleLoop();
+
+            // recover from battle
+            ResolveSurvivors(_attackerStartingForces, AttackerList);
+            ResolveSurvivors(_defenderStartingForces, DefenderList);
+
+            // determine outcome of battle.
+            if (AttackerState == CombatantState.COMBATANT_STATE_RALLIED)
+            {
+                // defender loses!
+                record = "The "
+                    + defender.GetPluralName() + " have been defeated by the "
+                    + attacker.GetPluralName() + " at "
+                    + defenderBase.GetFullName() + "!";
+
+                string defenderBaseName = defenderBase.Name;
+                MoveLosers(defender, defenderLands, defenderBaseName);
+                defenderBase.MoveCivIn(attacker);
+            }
+            else if (DefenderState == CombatantState.COMBATANT_STATE_RALLIED)
+            {
+                // attacker loses!
+                record = "The "
+                    + attacker.GetPluralName() + " have been repelled by the "
+                    + defender.GetPluralName() + " at "
+                    + defenderBase.GetFullName() + "!";
+
+                // In this case, the attackers seek to allign themselves 
+                // possibly where they landed.
+                MoveLosers(attacker, defenderLands, baseName: "");
+            }
+            else if (AttackerState == CombatantState.COMBATANT_STATE_ROUTED)
+            {
+                if (DefenderState == CombatantState.COMBATANT_STATE_ELIMINATED)
+                {
+                    // defenders lose
+                    record = "The " 
+                        + defender.GetPluralName() 
+                        + " have been defeated by the "
+                        + attacker.GetPluralName() + " at "
+                        + defenderBase.GetFullName() + "!";
+                    string defenderBaseName = defenderBase.Name;
+                    MoveLosers(defender, defenderLands, defenderBaseName);
+                    defenderBase.MoveCivIn(attacker);
+                }
+                // attackers lose
+                record = "The " 
+                    + attacker.GetPluralName() + " have been repelled by the "
+                    + defender.GetPluralName() + " at "
+                    + defenderBase.GetFullName() + "!";
+                MoveLosers(attacker, defenderLands, baseName: "");
+            }
+            else if (DefenderState == CombatantState.COMBATANT_STATE_ROUTED)
+            {
+                // attackers are not rallied, so they lose by default.
+                record = "The " 
+                    + attacker.GetPluralName() + " have been repelled by the "
+                    + defender.GetPluralName() + " at "
+                    + defenderBase.GetFullName() + "!";
+                MoveLosers(attacker, defenderLands, baseName: "");
+            }
+            else
+            {
+                // mutual destruction is highly unlikely, but not impossible.
+                record = "The "
+                    + attacker.GetPluralName() + " and the "
+                    + defender.GetPluralName()
+                    + " have achieved mutual destruction at "
+                    + defenderBase.GetFullName() + "!";
+
+                attacker.DissolvePopulation();
+                defender.DissolvePopulation();
+            }
+
+            _recordBattleReport(record, attacker, defender, defenderBase);
+
+            // any lingering civs with zero population are removed.
+            _worldMap.CleanOutRuins();
+        }
+
+        private void _recordBattleReport(string record, Civilization attacker, 
+            Civilization defender, Lair defenderBase)
+        {
+            record += " Battle lasted " + NumRounds + " rounds. " 
+                + attacker.GetFullName() + " survivors: " 
+                + (_attackerStartingForces - _defenderScore) + ". "
+                + defender.GetFullName() + " survivors: "
+                + (_defenderStartingForces - _attackerScore) 
+                + ". Final tally: "
+                + attacker.GetFullName() + ": " + attacker.Patricians.Members
+                + " vs " 
+                + defender.GetFullName() + ": " + defender.Patricians.Members;
+            
+            attacker.History.addRecord(record);
+            defender.History.addRecord(record, isLogged: false);
+            defenderBase.History.addRecord(record, isLogged: false);
+        }
+
+        /// <summary>
+        /// Fight battle rounds until there is a winner.
+        /// </summary>
+        private void _executeMainBattleLoop()
+        {
+            do
+            {
+                ++NumRounds;
+                ExecuteBattleRound();
+            } while (
+            (AttackerState == CombatantState.COMBATANT_STATE_RALLIED) && 
+            (DefenderState == CombatantState.COMBATANT_STATE_RALLIED)
+            );
         }
 
         /// <summary>
@@ -274,12 +450,6 @@ namespace Darkmoor
                 if (attacker.Patricians.Members <= attackerUnitLosses)
                 {
                     attacker.Patricians.Members = 0;
-                    // TODO: what to do if a civ is destroyed
-                    // home becomes a ruin with no civ, but how?
-                    // should subtraction of members be a function of the civ, population, or lair?
-                    // should we provide the lairs to the class instead of the civs so we can alter them?
-                    // perhaps we could just iterate the lairs at the end of the battle, and manipulate them
-                    // when their pop shows 0.
                 }
                 else
                 {
@@ -305,9 +475,12 @@ namespace Darkmoor
                 }
             }
 
+            _attackerScore = attackerCasualties;
+            _defenderScore = defenderCasualties;
+
             // determine loser and check morale...
             int moraleRoll = _dice.Roll(1, 20);
-            if (attackerUnitLosses < defenderUnitLosses)
+            if (attackerCasualties< defenderCasualties)
             {
                 // attacker lost 
                 if (GetTotalCombatants(AttackerList) 

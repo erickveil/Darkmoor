@@ -89,10 +89,16 @@ namespace Darkmoor
             return CulturalIdentity + " " + Patricians.BaseAncestry.Name;
         }
 
+        public string GetPluralName()
+        {
+            return RandomName.Pluralize(GetFullName());
+        }
+
         public void DissolvePopulation()
         {
             Patricians.Members = 0;
-            string record = GetFullName() + " have disbanded.";
+            string record = "The " + RandomName.Pluralize(GetFullName()) 
+                + " have disbanded.";
             History.addRecord(record);
         }
     }

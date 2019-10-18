@@ -15,7 +15,6 @@ namespace Darkmoor
     /// </summary>
     class Lair
     {
-        const int SUB_HEXES = 13;
 
         public string Name = "Unnamed";
         public string Type = "Cave";
@@ -39,11 +38,51 @@ namespace Darkmoor
         /// </summary>
         public void InitializeAsRandomLair()
         {
-            // Name
             var nameGen = new RandomName(_dice);
             Name = nameGen.CreateWord();
+            _setRandomLairType();
+            
+            // Civ
+            var civ = new Civilization(_dice);
+            civ.InitializeAsRandomCiv();
+            HomeCiv = civ;
 
-            // Type
+            SubhexIndex = _dice.RandomNumber(1, HexData.SUB_HEXES);
+            _recordFounding(civ);
+        }
+
+        /// <summary>
+        /// Generates a random lair for a civ
+        /// </summary>
+        /// <param name="settlers"></param>
+        public void InitializeAsSettlerLair(Civilization settlers, 
+            int subHexIndex)
+        {
+            var nameGen = new RandomName(_dice);
+            Name = nameGen.CreateWord();
+            _setRandomLairType();
+            HomeCiv = settlers;
+            SubhexIndex = subHexIndex;
+            _recordFounding(settlers);
+        }
+
+        /// <summary>
+        /// Add the founding of this lair to its history.
+        /// </summary>
+        private void _recordFounding(Civilization founders)
+        {
+            string record = Name + " " + Type + " has been founded by the " 
+                + RandomName.Pluralize(HomeCiv.GetFullName()) + " in area "
+                + SubhexIndex;
+            History.addRecord(record);
+            founders.History.addRecord(record, isLogged: false);
+        }
+
+        /// <summary>
+        /// Sets a random lair type from an available list
+        /// </summary>
+        private void _setRandomLairType()
+        {
             var lairTypeList = new List<string>()
             {
                 "Cave", "Dungeon", "Castle", "Keep", "Village", "Town", "City",
@@ -51,19 +90,6 @@ namespace Darkmoor
             };
             int lairIndex = _dice.RandomNumber(0, lairTypeList.Count - 1);
             Type = lairTypeList[lairIndex];
-
-            // Civ
-            var civ = new Civilization(_dice);
-            civ.InitializeAsRandomCiv();
-            HomeCiv = civ;
-
-            // Location in hex
-            SubhexIndex = _dice.RandomNumber(1, SUB_HEXES);
-
-            string record = Name + " " + Type + " has been founded by the " 
-                + RandomName.Pluralize(HomeCiv.GetFullName()) + " in area "
-                + SubhexIndex;
-            History.addRecord(record);
         }
 
         /// <summary>
@@ -97,6 +123,9 @@ namespace Darkmoor
 
         public void ForceAbandon()
         {
+            // if already abandoned, we can't do it again.
+            if (IsRuins()) { return; }
+
             string record = GetFullName() + " has been abandoned by "
                 + HomeCiv.GetFullName()
                 + " and fallen into ruin.";
@@ -109,7 +138,7 @@ namespace Darkmoor
         {
             HomeCiv = civ;
             string record = civ.GetFullName() + " have taken control of "
-                + GetFullName();
+                + GetFullName() + ".";
             History.addRecord(record);
             civ.History.addRecord(record, isLogged: false);
         }

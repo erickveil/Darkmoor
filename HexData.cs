@@ -15,6 +15,8 @@ namespace Darkmoor
     /// </summary>
     class HexData
     {
+        public const int SUB_HEXES = 7;
+
         public string Name;
         public int XCoord = 0;
         public int YCoord = 0;
@@ -61,8 +63,12 @@ namespace Darkmoor
                     LairList.Add(lair);
                     continue;
                 }
-                if ((results.AttackerState == Battle.CombatantState.COMBATANT_STATE_ELIMINATED)
-                    || (results.AttackerState == Battle.CombatantState.COMBATANT_STATE_ROUTED))
+                if (
+                    (results.AttackerState 
+                    == Battle.CombatantState.COMBATANT_STATE_ELIMINATED)
+                    || (results.AttackerState 
+                    == Battle.CombatantState.COMBATANT_STATE_ROUTED)
+                    )
                 {
                     // dont even save the lair.
                     continue;
@@ -112,34 +118,6 @@ namespace Darkmoor
                 case 4: return Tuple.Create(XCoord, YCoord - 1);
                 case 5: return Tuple.Create(XCoord - 1, YCoord - 1);
                 default: return Tuple.Create(XCoord - 1, YCoord);
-            }
-        }
-
-        /// <summary>
-        /// joining forces in the same hex
-        /// We don't do this anymore, as we just assume these are allies.
-        /// </summary>
-        private void JoinLikeForces()
-        {
-            foreach(var lair in LairList)
-            {
-                if (lair.IsRuins()) { continue; }
-                Civilization lairRulers = lair.HomeCiv;
-                foreach(var otherLair in LairList)
-                {
-                    if (otherLair.IsRuins()) { continue; }
-                    if (otherLair.Name == lair.Name) { continue; }
-                    bool isSameAncestry =
-                        otherLair.HomeCiv.Patricians.BaseAncestry.Name ==
-                        lair.HomeCiv.Patricians.BaseAncestry.Name;
-                    if (!isSameAncestry) { continue; }
-                    bool isSameCiv =
-                        otherLair.HomeCiv.CulturalIdentity ==
-                        lair.HomeCiv.CulturalIdentity;
-                    if (isSameCiv) { continue; }
-                    otherLair.HomeCiv.JoinOtherCivilization(lair.HomeCiv.CulturalIdentity);
-                    lair.HomeCiv.JoinOurCivilization(otherLair.HomeCiv.CulturalIdentity);
-                }
             }
         }
 

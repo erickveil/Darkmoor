@@ -63,5 +63,25 @@ namespace Darkmoor
 
             }
         }
+
+        /// <summary>
+        /// Determines the number of edges of the hex that fall outside the 
+        /// existing map.
+        /// </summary>
+        /// <param name="hex"></param>
+        /// <returns></returns>
+        public int NumberOutsideEdges(HexData hex)
+        {
+            int numOuterEdges = 0;
+            for (int i = 0; i < 6; ++i)
+            {
+                int index = i + 1;
+                var neighborCoords = hex.FindNeighborByIndex(index);
+                var neighbor = GetHexByCoordinates(neighborCoords.Item1, 
+                    neighborCoords.Item2);
+                if (neighbor == null) { ++numOuterEdges; }
+            }
+            return numOuterEdges;
+        }
     }
 }
