@@ -83,5 +83,19 @@ namespace Darkmoor
             }
             return numOuterEdges;
         }
+
+        public void ResolveAllMigrations()
+        {
+            var migration = new Migration(_dice, this);
+
+            // outside invaders
+            foreach (var hex in HexList)
+            {
+                migration.ResolveOutsideSingleHexMigration(hex);
+            }
+
+            // todo: resolve internal migrations
+            
+        }
     }
 }
