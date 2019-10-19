@@ -64,8 +64,16 @@ namespace Darkmoor
             }
             Civilization attacker = attackerBase.HomeCiv;
 
+            string record;
+
             if (defenderBase.IsRuins())
             {
+                record = (defenderBase.GetFullName() 
+                    + " is found abandoned by the " 
+                    + attacker.GetPluralName());
+                defenderBase.History.addRecord(record);
+                attacker.History.addRecord(record, isLogged: false);
+
                 defenderBase.MoveCivIn(attacker);
                 attackerBase.ForceAbandon();
                 DefenderState = CombatantState.COMBATANT_STATE_ELIMINATED;
@@ -73,7 +81,7 @@ namespace Darkmoor
             }
             Civilization defender = defenderBase.HomeCiv;
 
-            string record = "The " 
+            record = "The " 
                 + attacker.GetPluralName() + " are attacking the "
                 + defender.GetPluralName() + " at " 
                 + defenderBase.GetFullName() + "!";
@@ -93,33 +101,31 @@ namespace Darkmoor
             ResolveSurvivors(_defenderStartingForces, DefenderList);
 
             // determine outcome of battle.
-            if (AttackerState == CombatantState.COMBATANT_STATE_RALLIED)
+            bool isAttackerLost =
+                (AttackerState == CombatantState.COMBATANT_STATE_ELIMINATED)
+                || (AttackerState == CombatantState.COMBATANT_STATE_ROUTED);
+            bool isDefenderLost =
+                (DefenderState == CombatantState.COMBATANT_STATE_ELIMINATED)
+                || (DefenderState == CombatantState.COMBATANT_STATE_ROUTED);
+            bool isBothLost = isAttackerLost && isDefenderLost;
+            bool isMutualDestruction =
+                (DefenderState == CombatantState.COMBATANT_STATE_ELIMINATED
+                && AttackerState == CombatantState.COMBATANT_STATE_ELIMINATED);
+                
+
+            if (isMutualDestruction)
             {
-                // defender loses!
-                record = "The " 
-                    + defender.GetPluralName() + " have been defeated by the "
-                    + attacker.GetPluralName() + " at "
+                // mutual destruction is highly unlikely, but not impossible.
+                record = "The "
+                    + attacker.GetPluralName() + " and the "
+                    + defender.GetPluralName()
+                    + " have achieved mutual destruction at "
                     + defenderBase.GetFullName() + "!";
 
-                string defenderBaseName = defenderBase.Name;
-                MoveLosers(defender, defenderLands, defenderBaseName);
-                defenderBase.MoveCivIn(attacker);
-                attackerBase.ForceAbandon();
+                attacker.DissolvePopulation();
+                defender.DissolvePopulation();
             }
-            else if (DefenderState == CombatantState.COMBATANT_STATE_RALLIED)
-            {
-                // attacker loses!
-                record = "The " 
-                    + attacker.GetPluralName() + " have been repelled by the "
-                    + defender.GetPluralName() + " at "
-                    + defenderBase.GetFullName() + "!";
-
-                string attackerBaseName = attackerBase.Name;
-                // It's interesting that attackers don't go back home.
-                MoveLosers(attacker, attackerLands, attackerBaseName);
-                attackerBase.ForceAbandon();
-            }
-            else if (AttackerState == CombatantState.COMBATANT_STATE_ROUTED)
+            else if (isBothLost)
             {
                 if (DefenderState == CombatantState.COMBATANT_STATE_ELIMINATED)
                 {
@@ -134,8 +140,9 @@ namespace Darkmoor
                     defenderBase.MoveCivIn(attacker);
                     attackerBase.ForceAbandon();
                 }
-                // attackers lose
-                record = "The " 
+                else
+                {
+                    record = "The " 
                     + attacker.GetPluralName() + " have been repelled by the "
                     + defender.GetPluralName() + " at "
                     + defenderBase.GetFullName() + "!";
@@ -143,30 +150,33 @@ namespace Darkmoor
                 // It's interesting that attackers don't go back home.
                 MoveLosers(attacker, attackerLands, attackerBaseName);
                 attackerBase.ForceAbandon();
+                }
             }
-            else if (DefenderState == CombatantState.COMBATANT_STATE_ROUTED)
+            else if (isDefenderLost)
             {
-                // attackers are not rallied, so they lose by default.
+                // defender loses!
                 record = "The " 
-                    + attacker.GetPluralName() + " have been repelled by the "
-                    + defender.GetPluralName() + " at "
-                    + defenderBase.GetFullName() + "!";
-                string attackerBaseName = attackerBase.Name;
-                // It's interesting that attackers don't go back home.
-                MoveLosers(attacker, attackerLands, attackerBaseName);
-                attackerBase.ForceAbandon();
-            }
-            else
-            {
-                // mutual destruction is highly unlikely, but not impossible.
-                record = "The "
-                    + attacker.GetPluralName() + " and the "
-                    + defender.GetPluralName()
-                    + " have achieved mutual destruction at "
+                    + defender.GetPluralName() + " have been defeated by the "
+                    + attacker.GetPluralName() + " at "
                     + defenderBase.GetFullName() + "!";
 
-                attacker.DissolvePopulation();
-                defender.DissolvePopulation();
+                string defenderBaseName = defenderBase.Name;
+                MoveLosers(defender, defenderLands, defenderBaseName);
+                defenderBase.MoveCivIn(attacker);
+                attackerBase.ForceAbandon();
+            }
+            else // attacker lost
+            {
+                // attacker loses!
+                record = "The " 
+                    + attacker.GetPluralName() + " have been repelled by the "
+                    + defender.GetPluralName() + " at "
+                    + defenderBase.GetFullName() + "!";
+
+                string attackerBaseName = attackerBase.Name;
+                // It's interesting that attackers don't go back home.
+                MoveLosers(attacker, attackerLands, attackerBaseName);
+                attackerBase.ForceAbandon();
             }
 
             _recordBattleReport(record, attacker, defender, defenderBase);
@@ -185,15 +195,22 @@ namespace Darkmoor
         public void ResolveBattle(Civilization attacker, HexData defenderLands, 
             Lair defenderBase)
         {
+            string record;
             if (defenderBase.IsRuins())
             {
+                record = (defenderBase.GetFullName() 
+                    + " is found abandoned by the " 
+                    + attacker.GetPluralName());
+                defenderBase.History.addRecord(record);
+                attacker.History.addRecord(record, isLogged: false);
+
                 defenderBase.MoveCivIn(attacker);
                 DefenderState = CombatantState.COMBATANT_STATE_ELIMINATED;
                 return;
             }
             Civilization defender = defenderBase.HomeCiv;
 
-            string record = "The " 
+            record = "The " 
                 + attacker.GetPluralName() 
                 + " are attacking the "
                 + defender.GetPluralName() + " at " 
@@ -215,7 +232,57 @@ namespace Darkmoor
             ResolveSurvivors(_defenderStartingForces, DefenderList);
 
             // determine outcome of battle.
-            if (AttackerState == CombatantState.COMBATANT_STATE_RALLIED)
+            bool isAttackerLost =
+                (AttackerState == CombatantState.COMBATANT_STATE_ELIMINATED)
+                || (AttackerState == CombatantState.COMBATANT_STATE_ROUTED);
+            bool isDefenderLost =
+                (DefenderState == CombatantState.COMBATANT_STATE_ELIMINATED)
+                || (DefenderState == CombatantState.COMBATANT_STATE_ROUTED);
+            bool isBothLost = isAttackerLost && isDefenderLost;
+            bool isMutualDestruction =
+                (DefenderState == CombatantState.COMBATANT_STATE_ELIMINATED
+                && AttackerState == CombatantState.COMBATANT_STATE_ELIMINATED);
+             
+            if (isMutualDestruction)
+            {
+                // mutual destruction is highly unlikely, but not impossible.
+                record = "The "
+                    + attacker.GetPluralName() + " and the "
+                    + defender.GetPluralName()
+                    + " have achieved mutual destruction at "
+                    + defenderBase.GetFullName() + "!";
+
+                attacker.DissolvePopulation();
+                defender.DissolvePopulation();
+            }
+            else if (isBothLost)
+            {
+                if (DefenderState == CombatantState.COMBATANT_STATE_ELIMINATED)
+                {
+                    // defender loses!
+                    record = "The "
+                        + defender.GetPluralName() + " have been defeated by the "
+                        + attacker.GetPluralName() + " at "
+                        + defenderBase.GetFullName() + "!";
+
+                    string defenderBaseName = defenderBase.Name;
+                    MoveLosers(defender, defenderLands, defenderBaseName);
+                    defenderBase.MoveCivIn(attacker);
+                }
+                else
+                {
+                    // attacker loses!
+                    record = "The "
+                        + attacker.GetPluralName() + " have been repelled by the "
+                        + defender.GetPluralName() + " at "
+                        + defenderBase.GetFullName() + "!";
+
+                    // In this case, the attackers seek to allign themselves 
+                    // possibly where they landed.
+                    MoveLosers(attacker, defenderLands, baseName: "");
+                }
+            }
+            else if (isDefenderLost)
             {
                 // defender loses!
                 record = "The "
@@ -227,7 +294,7 @@ namespace Darkmoor
                 MoveLosers(defender, defenderLands, defenderBaseName);
                 defenderBase.MoveCivIn(attacker);
             }
-            else if (DefenderState == CombatantState.COMBATANT_STATE_RALLIED)
+            else // attacker lost
             {
                 // attacker loses!
                 record = "The "
@@ -238,48 +305,6 @@ namespace Darkmoor
                 // In this case, the attackers seek to allign themselves 
                 // possibly where they landed.
                 MoveLosers(attacker, defenderLands, baseName: "");
-            }
-            else if (AttackerState == CombatantState.COMBATANT_STATE_ROUTED)
-            {
-                if (DefenderState == CombatantState.COMBATANT_STATE_ELIMINATED)
-                {
-                    // defenders lose
-                    record = "The " 
-                        + defender.GetPluralName() 
-                        + " have been defeated by the "
-                        + attacker.GetPluralName() + " at "
-                        + defenderBase.GetFullName() + "!";
-                    string defenderBaseName = defenderBase.Name;
-                    MoveLosers(defender, defenderLands, defenderBaseName);
-                    defenderBase.MoveCivIn(attacker);
-                }
-                // attackers lose
-                record = "The " 
-                    + attacker.GetPluralName() + " have been repelled by the "
-                    + defender.GetPluralName() + " at "
-                    + defenderBase.GetFullName() + "!";
-                MoveLosers(attacker, defenderLands, baseName: "");
-            }
-            else if (DefenderState == CombatantState.COMBATANT_STATE_ROUTED)
-            {
-                // attackers are not rallied, so they lose by default.
-                record = "The " 
-                    + attacker.GetPluralName() + " have been repelled by the "
-                    + defender.GetPluralName() + " at "
-                    + defenderBase.GetFullName() + "!";
-                MoveLosers(attacker, defenderLands, baseName: "");
-            }
-            else
-            {
-                // mutual destruction is highly unlikely, but not impossible.
-                record = "The "
-                    + attacker.GetPluralName() + " and the "
-                    + defender.GetPluralName()
-                    + " have achieved mutual destruction at "
-                    + defenderBase.GetFullName() + "!";
-
-                attacker.DissolvePopulation();
-                defender.DissolvePopulation();
             }
 
             _recordBattleReport(record, attacker, defender, defenderBase);
@@ -314,6 +339,7 @@ namespace Darkmoor
             do
             {
                 ++NumRounds;
+                Console.WriteLine("Battle: Round " + NumRounds);
                 ExecuteBattleRound();
             } while (
             (AttackerState == CombatantState.COMBATANT_STATE_RALLIED) && 
@@ -337,14 +363,21 @@ namespace Darkmoor
                 {
                     continue;
                 }
-                if (lair.HomeCiv.Patricians.BaseAncestry.Name 
-                    == attacker.Patricians.BaseAncestry.Name)
+                if (lair.HomeCiv.Patricians.BaseAncestry.Name
+                    != attacker.Patricians.BaseAncestry.Name)
                 {
-                    if (attacker.LeaderCompetency > _dice.Roll(1, 12))
-                    {
-                        AttackerList.Add(lair.HomeCiv);
-                    }
+                    continue;
                 }
+                if (attacker.LeaderCompetency <= _dice.Roll(1, 12))
+                {
+                    continue;
+                }
+                AttackerList.Add(lair.HomeCiv);
+                string record = "The " + attacker.GetPluralName()
+                    + " have convinced the " + lair.HomeCiv.GetPluralName()
+                    + " to aid them in their attack.";
+                attacker.History.addRecord(record);
+                lair.HomeCiv.History.addRecord(record, isLogged: false);
             }
         }
 
@@ -364,14 +397,21 @@ namespace Darkmoor
                 {
                     continue;
                 }
-                if (lair.HomeCiv.Patricians.BaseAncestry.Name 
-                    == defender.Patricians.BaseAncestry.Name)
+                if (lair.HomeCiv.Patricians.BaseAncestry.Name
+                    != defender.Patricians.BaseAncestry.Name)
                 {
-                    if (defender.LeaderCompetency > _dice.Roll(1, 12))
-                    {
-                        DefenderList.Add(lair.HomeCiv);
-                    }
+                    continue;
                 }
+                if (defender.LeaderCompetency <= _dice.Roll(1, 12))
+                {
+                    continue;
+                }
+                DefenderList.Add(lair.HomeCiv);
+                string record = "The " + defender.GetPluralName()
+                    + " have convinced the " + lair.HomeCiv.GetPluralName()
+                    + " to come to their defense.";
+                defender.History.addRecord(record);
+                lair.HomeCiv.History.addRecord(record, isLogged: false);
             }
         }
 
@@ -409,6 +449,7 @@ namespace Darkmoor
             int attackerHd = attackerAncestry.HitDice 
                 + attackerPop.HitDiceBonus;
             int attackerDamageTaken = 0;
+
             int defenderForces = GetTotalCombatants(DefenderList);
             var defenderPop = DefenderList[0].Patricians;
             var defenderAncestry = defenderPop.BaseAncestry;
@@ -423,13 +464,17 @@ namespace Darkmoor
                 + defenderPop.HitDiceBonus;
             int defenderDamageTaken = 0;
 
+            Console.WriteLine(attackerForces + " attackers vs " 
+                + defenderForces + " defenders");
+
             // attacker attacks
             for (int i = 0; i < attackerNumAttacks; ++i)
             {
                 int attackRoll = _dice.Roll(1, 20) + attackerHitBonus;
                 if (attackRoll >= defenderAc) { ++defenderDamageTaken; }
             }
-            int attackerCasualties = attackerDamageTaken / attackerHd;
+            int defenderCasualties = defenderDamageTaken / defenderHd;
+
 
             // defender counters 
             for (int i = 0; i < defenderNumAttacks; ++i)
@@ -437,9 +482,12 @@ namespace Darkmoor
                 int attackRoll = _dice.Roll(1, 20) + defenderHitBonus;
                 if (attackRoll >= attackerAc) { ++attackerDamageTaken; }
             }
-            int defenderCasualties = defenderDamageTaken / defenderHd;
+            int attackerCasualties = attackerDamageTaken / attackerHd;
 
-            // attackers take losses
+            Console.WriteLine("Attacker casualties: " + attackerCasualties
+                + " | Defender casualties: " + defenderCasualties);
+
+            // attackers take losses spread over units
             float attackerUnitLosses = attackerCasualties / numAttackerUnits;
             if (attackerUnitLosses > 0 && attackerUnitLosses < 1)
             {
@@ -457,7 +505,7 @@ namespace Darkmoor
                 }
             }
 
-            // defender takes losses
+            // defender takes losses spread over units
             float defenderUnitLosses = defenderCasualties / numDefenderunits;
             if (defenderUnitLosses > 0 && defenderUnitLosses < 1)
             {
@@ -478,6 +526,12 @@ namespace Darkmoor
             _attackerScore += defenderCasualties;
             _defenderScore += attackerCasualties;
 
+            Console.WriteLine("Total score: Attacker - " + _attackerScore
+                + " | Defender - " + _defenderScore 
+                + ". Current totals: Attacker - " 
+                + GetTotalCombatants(AttackerList)
+                + " | Defender - " + GetTotalCombatants(DefenderList)); 
+
             // determine loser and check morale...
             int moraleRoll = _dice.Roll(1, 20);
             int attackMoraleBonus = AttackerList[0].Patricians.MoraleBonus +
@@ -485,42 +539,51 @@ namespace Darkmoor
             int defenseMoraleBonus = DefenderList[0].Patricians.MoraleBonus +
                 DefenderList[0].Patricians.BaseAncestry.MoraleBonus;
 
-            if (_defenderScore > _attackerScore)
+            if (defenderCasualties < attackerCasualties)
             {
+                Console.WriteLine("Attacker losing");
                 // attacker losing
                 if (GetTotalCombatants(AttackerList) 
                     <= _attackerStartingForces / 3)
                 {
+                    Console.WriteLine(
+                        "Attacker lost over 1/3 foces and routing.");
                     AttackerState = CombatantState.COMBATANT_STATE_ROUTED;
                 }
                 else if ((moraleRoll + attackMoraleBonus) < 10)
                 {
+                    Console.WriteLine("Attacker failed morale and routing.");
                     AttackerState = CombatantState.COMBATANT_STATE_ROUTED;
                 }
             }
-            else if (_attackerScore > _defenderScore)
+            else if (attackerCasualties < defenderCasualties)
             {
+                Console.WriteLine("Defender losing");
                 // defender losing
                 if (GetTotalCombatants(DefenderList)
                     <= _defenderStartingForces / 3)
                 {
+                    Console.WriteLine(
+                        "Defender lost over 1/3 forces and routing.");
                     DefenderState = CombatantState.COMBATANT_STATE_ROUTED;
                 }
                 else if ((moraleRoll + defenseMoraleBonus) < 10)
                 {
+                    Console.WriteLine("Defender failed morale and routing.");
                     DefenderState = CombatantState.COMBATANT_STATE_ROUTED;
                 }
-
             }
             // else stalemate, no moaral checks
 
             // Very unlikely, but check for genocide
             if (GetTotalCombatants(AttackerList) == 0)
             {
+                Console.WriteLine("Attacker forces have been eliminated!");
                 AttackerState = CombatantState.COMBATANT_STATE_ELIMINATED;
             }
             if (GetTotalCombatants(DefenderList) == 0)
             {
+                Console.WriteLine("Defender forces have been eliminated!");
                 DefenderState = CombatantState.COMBATANT_STATE_ELIMINATED;
             }
         }
@@ -536,27 +599,39 @@ namespace Darkmoor
             var losses = startingNumbers - unharmed;
             int result = _dice.Roll(1, 10);
             int replacements;
+            string report;
             if (result <= 3) { 
-                replacements = (int)(losses * 0.3); 
+                replacements = (int)(losses * 0.3);
+                report = "30%";
             }
             else if (result <= 5) { 
-                replacements = (int)(losses * 0.5); 
+                replacements = (int)(losses * 0.5);
+                report = "50%";
             }
             else if (result <= 7) { 
-                replacements = (int)(losses * 0.75); 
+                replacements = (int)(losses * 0.75);
+                report = "75%";
             }
             else if (result == 8) { 
-                replacements = losses; 
+                replacements = losses;
+                report = "100%";
             }
             else if (result == 9) { 
-                replacements = losses + (int)(startingNumbers * 0.1); 
+                replacements = losses + (int)(startingNumbers * 0.1);
+                report = "110%";
             }
             else
             {
                 replacements = 0;
+                report = "none";
             }
 
-            int unitReplacements = replacements / army.Count;
+            Console.WriteLine(army[0].GetPluralName() + " have regained "
+                + report + " (" + replacements 
+                + ") of their losses after the fight: From "
+                + unharmed + " to " + (replacements + unharmed));
+
+            int unitReplacements = (int)((float)replacements / (float)army.Count);
 
             foreach(var unit in army)
             {
