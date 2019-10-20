@@ -44,6 +44,7 @@ namespace Darkmoor
         /// <returns></returns>
         public T GetResult()
         {
+            if (_ItemList.Count == 0) { return default(T);  }
             int roll = _dice.Roll(1, _ItemList.Count) - 1;
             return _ItemList[roll];
         }

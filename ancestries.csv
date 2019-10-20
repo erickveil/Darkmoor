@@ -1,0 +1,7 @@
+Name,Min,Max,AC,ToHit,NumAtt,HD,Morale
+human,180,220,10,0,1,1,0
+elf,180,220,10,0,1,1,0
+dwarf,180,220,10,0,1,1,0
+hobgoblin,180,220,10,0,1,1,0
+dark elf,180,220,10,0,1,1,0
+orc,180,220,10,0,1,1,0
