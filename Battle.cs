@@ -143,13 +143,13 @@ namespace Darkmoor
                 else
                 {
                     record = "The " 
-                    + attacker.GetPluralName() + " have been repelled by the "
-                    + defender.GetPluralName() + " at "
-                    + defenderBase.GetFullName() + "!";
-                string attackerBaseName = attackerBase.Name;
-                // It's interesting that attackers don't go back home.
-                MoveLosers(attacker, attackerLands, attackerBaseName);
-                attackerBase.ForceAbandon();
+                        + attacker.GetPluralName() + " have been repelled by the "
+                        + defender.GetPluralName() + " at "
+                        + defenderBase.GetFullName() + "!";
+                    string attackerBaseName = attackerBase.Name;
+                    // It's interesting that attackers don't go back home.
+                    MoveLosers(attacker, attackerLands, attackerBaseName);
+                    attackerBase.ForceAbandon();
                 }
             }
             else if (isDefenderLost)

@@ -34,7 +34,7 @@ namespace Darkmoor
         public void InitializeAsRandomPop()
         {
             var ancestryGen = new AncestryIndex();
-            ancestryGen.LoadFileAncestries();
+            ancestryGen.LoadAllSources();
             BaseAncestry = ancestryGen.GetRandomAncestry();
             Members = _dice.RandomNumber(BaseAncestry.MinAppearing, 
                 BaseAncestry.MaxAppearing);

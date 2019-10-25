@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace Darkmoor
 {
@@ -43,7 +44,13 @@ namespace Darkmoor
             }
         }
 
-        public void LoadFileAncestries()
+        public void LoadAllSources()
+        {
+            LoadCsvAncestries();
+            LoadJsonAncestries();
+        }
+
+        public void LoadCsvAncestries()
         {
             try
             {
@@ -93,6 +100,17 @@ namespace Darkmoor
             }
 
         }
+
+        public void LoadJsonAncestries()
+        {
+            Bestiary bestiary_mm;
+            string mmFilename = @"bestiary-mm.json";
+            string jsonData = File.ReadAllText(mmFilename);
+            bestiary_mm = JsonConvert.DeserializeObject<Bestiary>(jsonData);
+            Console.WriteLine("Bestiary Loaded");
+        }
+
+        
 
         private void _fillStringEntry(List<string> entryList, int index, 
             out string target)
