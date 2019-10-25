@@ -8,7 +8,7 @@ namespace Darkmoor
 {
     class Bestiary
     {
-        List<BestiaryMonster> monster = new List<BestiaryMonster>();
+        public List<BestiaryMonster> monster = new List<BestiaryMonster>();
 
     }
 }

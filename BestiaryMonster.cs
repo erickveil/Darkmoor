@@ -8,7 +8,7 @@ namespace Darkmoor
 {
     class BestiaryMonster
     {
-        string name;
-        string size;
+        public string name;
+        public string size;
     }
 }
