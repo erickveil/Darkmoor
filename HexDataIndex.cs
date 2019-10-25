@@ -24,6 +24,17 @@ namespace Darkmoor
             TimeObj.Init(_dice);
         }
 
+        /// <summary>
+        /// After loading, need to set all the Home Hexes in every hex
+        /// </summary>
+        public void InitChildren()
+        {
+            foreach (var hex in HexList)
+            {
+                hex.InitChildren();
+            }
+        }
+
         public void ClearAllData()
         {
             TimeObj.Reset();

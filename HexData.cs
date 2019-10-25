@@ -38,6 +38,17 @@ namespace Darkmoor
         }
 
         /// <summary>
+        /// AFter loading, we need to make sure the lairs all have home hexes.
+        /// </summary>
+        public void InitChildren()
+        {
+            foreach ( var lair in LairList)
+            {
+                lair.HomeHex = this;
+            }
+        }
+
+        /// <summary>
         /// Sets this hex up with random components
         /// </summary>
         /// <param name="x"></param>

@@ -33,6 +33,7 @@ namespace Darkmoor
             ProgramData.ClearAllData();
             string jsonData = File.ReadAllText(saveFileName);
             ProgramData = JsonConvert.DeserializeObject<HexDataIndex>(jsonData);
+            ProgramData.InitChildren();
             Console.WriteLine("Data Loaded");
         }
     }

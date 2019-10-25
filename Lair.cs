@@ -25,6 +25,8 @@ namespace Darkmoor
         private HexData _homeHex;
         private readonly Dice _dice;
 
+        internal HexData HomeHex { get => _homeHex; set => _homeHex = value; }
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -32,11 +34,6 @@ namespace Darkmoor
         public Lair()
         {
             _dice = Dice.Instance;
-        }
-
-        public HexData getHomeHex()
-        {
-            return _homeHex;
         }
 
         /// <summary>
@@ -52,7 +49,7 @@ namespace Darkmoor
             var civ = new Civilization();
             civ.InitializeAsRandomCiv();
             HomeCiv = civ;
-            _homeHex = hex;
+            HomeHex = hex;
 
             SubhexIndex = _dice.RandomNumber(1, HexData.SUB_HEXES);
             var hexName = hex.getNameWithLoc();
@@ -71,7 +68,7 @@ namespace Darkmoor
             _setRandomLairType();
             HomeCiv = settlers;
             SubhexIndex = subHexIndex;
-            _homeHex = hex;
+            HomeHex = hex;
             var hexName = hex.getNameWithLoc();
             _recordFounding(settlers, hexName);
         }
