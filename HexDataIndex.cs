@@ -24,6 +24,12 @@ namespace Darkmoor
             TimeObj.Init(_dice);
         }
 
+        public void ClearAllData()
+        {
+            TimeObj.Reset();
+            HexList.Clear();
+        }
+
         public void GenerateWorld(int width, int height)
         {
             for (int x = 0; x < width; ++x)

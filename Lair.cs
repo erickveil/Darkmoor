@@ -19,10 +19,10 @@ namespace Darkmoor
         public string Name = "Unnamed";
         public string Type = "Cave";
         public Civilization HomeCiv;
-        public HexData HomeHex;
         public int SubhexIndex = 0;
         public HistoryLog History = new HistoryLog();
 
+        private HexData _homeHex;
         private readonly Dice _dice;
 
         /// <summary>
@@ -32,6 +32,11 @@ namespace Darkmoor
         public Lair(Dice dice)
         {
             _dice = dice;
+        }
+
+        public HexData getHomeHex()
+        {
+            return _homeHex;
         }
 
         /// <summary>
@@ -47,7 +52,7 @@ namespace Darkmoor
             var civ = new Civilization(_dice);
             civ.InitializeAsRandomCiv();
             HomeCiv = civ;
-            HomeHex = hex;
+            _homeHex = hex;
 
             SubhexIndex = _dice.RandomNumber(1, HexData.SUB_HEXES);
             var hexName = hex.getNameWithLoc();
@@ -66,7 +71,7 @@ namespace Darkmoor
             _setRandomLairType();
             HomeCiv = settlers;
             SubhexIndex = subHexIndex;
-            HomeHex = hex;
+            _homeHex = hex;
             var hexName = hex.getNameWithLoc();
             _recordFounding(settlers, hexName);
         }

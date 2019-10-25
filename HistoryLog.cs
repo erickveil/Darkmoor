@@ -12,7 +12,7 @@ namespace Darkmoor
     /// </summary>
     class HistoryLog
     {
-        List<string> _historyList = new List<string>();
+        public List<string> _historyList = new List<string>();
         GameTime _timeObj;
 
         public HistoryLog()

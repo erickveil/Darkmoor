@@ -13,14 +13,15 @@ namespace Darkmoor
     public partial class Form1 : Form
     {
         Dice _dice = new Dice();
-        HexDataIndex _worldMap;
+        DataSaver _gameData;
 
         public Form1()
         {
             InitializeComponent();
 
-            _worldMap = new HexDataIndex(_dice);
-            _worldMap.GenerateWorld(3, 3);
+            _gameData = new DataSaver(_dice);
+            _gameData.ProgramData = new HexDataIndex(_dice);
+            _gameData.ProgramData.GenerateWorld(3, 3);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -29,12 +30,23 @@ namespace Darkmoor
 
         private void bu_newYear_Click(object sender, EventArgs e)
         {
-            ++_worldMap.TimeObj.Year;
-            _worldMap.TimeObj.Month = 1;
-            _worldMap.TimeObj.Day = 1;
-            _worldMap.IncreaseAllPopulations();
-            _worldMap.ResolveAllMigrations();
+            ++_gameData.ProgramData.TimeObj.Year;
+            _gameData.ProgramData.TimeObj.Month = 1;
+            _gameData.ProgramData.TimeObj.Day = 1;
+            _gameData.ProgramData.IncreaseAllPopulations();
+            _gameData.ProgramData.ResolveAllMigrations();
 
+        }
+
+        private void bu_save_Click(object sender, EventArgs e)
+        {
+            _gameData.Save();
+
+        }
+
+        private void bu_load_Click(object sender, EventArgs e)
+        {
+            _gameData.Load();
         }
     }
 }

@@ -96,7 +96,7 @@ namespace Darkmoor
             {
                 ++_worldMap.TimeObj.Day;
                 if (lair is null) { continue; }
-                _doMigration(lair, lair.HomeHex);
+                _doMigration(lair, lair.getHomeHex());
             }
 
             // April
@@ -106,7 +106,7 @@ namespace Darkmoor
             {
                 ++_worldMap.TimeObj.Day;
                 if (lair is null) { continue; }
-                _doMigration(lair, lair.HomeHex);
+                _doMigration(lair, lair.getHomeHex()) ;
             }
 
             // May
@@ -116,7 +116,7 @@ namespace Darkmoor
             {
                 ++_worldMap.TimeObj.Day;
                 if (lair is null) { continue; }
-                _doMigration(lair, lair.HomeHex);
+                _doMigration(lair, lair.getHomeHex());
             }
         }
 

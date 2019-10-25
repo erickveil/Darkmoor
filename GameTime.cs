@@ -42,6 +42,12 @@ namespace Darkmoor
                 return _instance;
             }
         }
+        public void Reset()
+        {
+            Year = 1;
+            Month = 1;
+            Day = 1;
+        }
 
         public void Init(Dice dice)
         {
