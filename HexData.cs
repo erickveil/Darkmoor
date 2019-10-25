@@ -31,9 +31,9 @@ namespace Darkmoor
         /// </summary>
         /// <param name="dice"></param>
         /// <param name="worldMap"></param>
-        public HexData(Dice dice, HexDataIndex worldMap)
+        public HexData(HexDataIndex worldMap)
         {
-            _dice = dice;
+            _dice = Dice.Instance;
             _worldMap = worldMap;
         }
 
@@ -44,7 +44,7 @@ namespace Darkmoor
         /// <param name="y"></param>
         public void InitializeAsRandomHex(int x, int y)
         {
-            var nameGen = new RandomName(_dice);
+            var nameGen = new RandomName();
             Name = nameGen.CreateWord();
 
             XCoord = x;
@@ -53,7 +53,7 @@ namespace Darkmoor
             int numLairs = _dice.Roll(1, 6) - 1;
             for (int i = 0; i < numLairs; ++i)
             {
-                var lair = new Lair(_dice);
+                var lair = new Lair();
                 lair.InitializeAsRandomLair(this);
                 // resolve any conflicting locations
                 Battle results = ResolveSettlementConflicts(lair);
@@ -134,7 +134,7 @@ namespace Darkmoor
             foreach(var lair in LairList)
             {
                 if (newLair.SubhexIndex != lair.SubhexIndex) { continue; }
-                var battle = new Battle(_dice, _worldMap);
+                var battle = new Battle(_worldMap);
                 battle.ResolveBattle(this, this, newLair, lair);
                 return battle;
             }

@@ -12,15 +12,14 @@ namespace Darkmoor
 {
     public partial class Form1 : Form
     {
-        Dice _dice = new Dice();
         DataSaver _gameData;
 
         public Form1()
         {
             InitializeComponent();
 
-            _gameData = new DataSaver(_dice);
-            _gameData.ProgramData = new HexDataIndex(_dice);
+            _gameData = new DataSaver();
+            _gameData.ProgramData = new HexDataIndex();
             _gameData.ProgramData.GenerateWorld(3, 3);
         }
 

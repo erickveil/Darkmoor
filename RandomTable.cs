@@ -15,9 +15,9 @@ namespace Darkmoor
         /// <summary>
         /// Initializes the entry list
         /// </summary>
-        public RandomTable(Dice dice)
+        public RandomTable()
         {
-            _dice = dice;
+            _dice = Dice.Instance;
 
             _ItemList = new List<T>();
             _NumEntries = 0;

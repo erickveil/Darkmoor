@@ -29,9 +29,9 @@ namespace Darkmoor
         /// Constructor
         /// </summary>
         /// <param name="dice"></param>
-        public Lair(Dice dice)
+        public Lair()
         {
-            _dice = dice;
+            _dice = Dice.Instance;
         }
 
         public HexData getHomeHex()
@@ -44,12 +44,12 @@ namespace Darkmoor
         /// </summary>
         public void InitializeAsRandomLair(HexData hex)
         {
-            var nameGen = new RandomName(_dice);
+            var nameGen = new RandomName();
             Name = nameGen.CreateWord();
             _setRandomLairType();
             
             // Civ
-            var civ = new Civilization(_dice);
+            var civ = new Civilization();
             civ.InitializeAsRandomCiv();
             HomeCiv = civ;
             _homeHex = hex;
@@ -66,7 +66,7 @@ namespace Darkmoor
         public void InitializeAsSettlerLair(Civilization settlers, 
             int subHexIndex, HexData hex)
         {
-            var nameGen = new RandomName(_dice);
+            var nameGen = new RandomName();
             Name = nameGen.CreateWord();
             _setRandomLairType();
             HomeCiv = settlers;

@@ -26,14 +26,14 @@ namespace Darkmoor
 
         readonly Dice _dice;
 
-        public Population(Dice dice)
+        public Population()
         {
-            _dice = dice;
+            _dice = Dice.Instance;
         }
 
         public void InitializeAsRandomPop()
         {
-            var ancestryGen = new AncestryIndex(_dice);
+            var ancestryGen = new AncestryIndex();
             ancestryGen.LoadFileAncestries();
             BaseAncestry = ancestryGen.GetRandomAncestry();
             Members = _dice.RandomNumber(BaseAncestry.MinAppearing, 

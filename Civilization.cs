@@ -26,9 +26,9 @@ namespace Darkmoor
         /// Constructor sets the dice
         /// </summary>
         /// <param name="dice"></param>
-        public Civilization(Dice dice)
+        public Civilization()
         {
-            _dice = dice;
+            _dice = Dice.Instance;
         }
 
         /// <summary>
@@ -36,10 +36,10 @@ namespace Darkmoor
         /// </summary>
         public void InitializeAsRandomCiv()
         {
-            var nameGen = new RandomName(_dice);
+            var nameGen = new RandomName();
             CulturalIdentity = nameGen.CreateWord();
 
-            var founders = new Population(_dice);
+            var founders = new Population();
             founders.InitializeAsRandomPop();
             Patricians = founders;
 

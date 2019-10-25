@@ -13,13 +13,10 @@ namespace Darkmoor
     {
         public HexDataIndex ProgramData;
         public string saveFileName = @"worldData.json";
-        private Dice _dice;
 
-        public DataSaver(Dice dice)
+        public DataSaver()
         {
-
-            _dice = dice;
-            ProgramData = new HexDataIndex(_dice);
+            ProgramData = new HexDataIndex();
         }
 
         public void Save()

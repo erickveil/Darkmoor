@@ -9,6 +9,24 @@ namespace Darkmoor
     public class Dice
     {
         readonly Random _rng = new Random();
+        private static Dice _instance = null;
+
+        /// <summary>
+        /// Singleton uses Instance to get.
+        /// </summary>
+        private Dice()
+        {
+
+        }
+
+        public static Dice Instance
+        {
+            get
+            {
+                if (_instance is null) { _instance = new Dice();  }
+                return _instance;
+            }
+        }
 
         /// <summary>
         /// Generates a number between min and max, inclusive.

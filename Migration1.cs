@@ -15,9 +15,9 @@ namespace Darkmoor
         private List<Lair> _aprilMigrations = new List<Lair>();
         private List<Lair> _mayMigrations = new List<Lair>();
 
-        public Migration(Dice dice, HexDataIndex worldMap)
+        public Migration(HexDataIndex worldMap)
         {
-            _dice = dice;
+            _dice = Dice.Instance;
             _worldMap = worldMap;
         }
 
@@ -37,7 +37,7 @@ namespace Darkmoor
             if (roll > chance) { return; }
 
             // Are they invaders, or settlers?
-            var invaders = new Civilization(_dice);
+            var invaders = new Civilization();
             invaders.InitializeAsRandomCiv();
 
             // Depends on where they land:
@@ -46,7 +46,7 @@ namespace Darkmoor
             if (results is null)
             {
                 // no battle. settle in unclaimed land.
-                var lair = new Lair(_dice);
+                var lair = new Lair();
                 lair.InitializeAsSettlerLair(invaders, subHexLoc, hex);
                 hex.LairList.Add(lair);
                 return;
@@ -143,7 +143,7 @@ namespace Darkmoor
             if (existingLair is null)
             {
                 // Free real estate!
-                var newLair = new Lair(_dice);
+                var newLair = new Lair();
                 newLair.InitializeAsSettlerLair(lair.HomeCiv, subHexIndex,
                     targetHex);
                 targetHex.LairList.Add(newLair);
@@ -151,7 +151,7 @@ namespace Darkmoor
                 return;
             }
             // Going to have to fight for the space.
-            var battle = new Battle(_dice, _worldMap);
+            var battle = new Battle(_worldMap);
             battle.ResolveBattle(hex, targetHex, lair, existingLair);
 
         }
@@ -170,7 +170,7 @@ namespace Darkmoor
             foreach (var lair in hex.LairList)
             {
                 if (subHexIndex != lair.SubhexIndex) { continue; }
-                var battle = new Battle(_dice, _worldMap);
+                var battle = new Battle(_worldMap);
                 battle.ResolveBattle(invaders, hex, lair);
                 return battle;
             }

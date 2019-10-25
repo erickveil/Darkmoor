@@ -39,9 +39,9 @@ namespace Darkmoor
         /// </summary>
         /// <param name="dice"></param>
         /// <param name="worldMap"></param>
-        public Battle(Dice dice, HexDataIndex worldMap)
+        public Battle(HexDataIndex worldMap)
         {
-            _dice = dice;
+            _dice = Dice.Instance;
             _worldMap = worldMap;
         }
 

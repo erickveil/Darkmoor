@@ -15,8 +15,6 @@ namespace Darkmoor
     class GameTime
     {
         private static GameTime _instance = null;
-        private Dice _dice;
-        private bool _isInit = false;
 
         public int Year = 1;
         public int Month = 1;
@@ -51,8 +49,6 @@ namespace Darkmoor
 
         public void Init(Dice dice)
         {
-            _dice = dice;
-            _isInit = true;
         }
 
         public string GetDateString()

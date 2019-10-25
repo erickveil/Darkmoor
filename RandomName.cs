@@ -10,9 +10,9 @@ namespace Darkmoor
     {
         readonly Dice _die;
 
-        public RandomName(Dice die)
+        public RandomName()
         {
-            _die = die;
+            _die = Dice.Instance;
         }
 
         /// <summary>

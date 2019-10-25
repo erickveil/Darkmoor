@@ -17,9 +17,9 @@ namespace Darkmoor
         public GameTime TimeObj;
         public List<HexData> HexList = new List<HexData>();
 
-        public HexDataIndex(Dice dice)
+        public HexDataIndex()
         {
-            _dice = dice;
+            _dice = Dice.Instance;
             TimeObj = GameTime.Instance;
             TimeObj.Init(_dice);
         }
@@ -43,7 +43,7 @@ namespace Darkmoor
 
         public HexData CreateRandomHex(int x, int y)
         {
-            HexData hex = new HexData(_dice, this);
+            HexData hex = new HexData(this);
             hex.InitializeAsRandomHex(x, y);
             return hex;
         }
@@ -101,7 +101,7 @@ namespace Darkmoor
 
         public void ResolveAllMigrations()
         {
-            var migration = new Migration(_dice, this);
+            var migration = new Migration(this);
 
             // outside invaders
             foreach (var hex in HexList)

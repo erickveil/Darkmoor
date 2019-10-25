@@ -16,10 +16,10 @@ namespace Darkmoor
 
         Dice _dice;
 
-        public AncestryIndex(Dice dice)
+        public AncestryIndex()
         {
-            _dice = dice;
-            _ancestryTable = new RandomTable<Ancestry>(dice);
+            _dice = Dice.Instance;
+            _ancestryTable = new RandomTable<Ancestry>();
         }
 
         public void LoadConstantAncestries()
