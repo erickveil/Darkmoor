@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Darkmoor
 {
@@ -103,11 +104,76 @@ namespace Darkmoor
 
         public void LoadJsonAncestries()
         {
+            // load files
             Bestiary bestiary_mm;
             string mmFilename = @"bestiary-mm.json";
             string jsonData = File.ReadAllText(mmFilename);
+
+            // easy items to deserialize
             bestiary_mm = JsonConvert.DeserializeObject<Bestiary>(jsonData);
+
+            // items that have questionable types
+            JObject rootObj = JObject.Parse(jsonData);
+            JArray monsterList = (JArray)rootObj["monster"];
+            for (int i = 0; i < monsterList.Count; ++i)
+            {
+                // ======================
+                // Type
+                JToken typeToken = monsterList[i]["type"];
+                var typeList = new List<string>();
+                if (typeToken.GetType() == typeof(JValue))
+                {
+                    typeList.Add((string)typeToken);
+                }
+                else if (typeToken.GetType() == typeof(JObject))
+                {
+                    // Add the type string
+                    var typeObj = (JObject)typeToken;
+                    typeList.Add((string)typeObj["type"]);
+
+                    // Add the tags as type strings
+                    var tagsJsonList = (JArray)typeObj["tags"];
+
+                    // not all type objects have a tags list
+                    var tagList = tagsJsonList?.ToObject<List<string>>();
+                    if (!(tagList is null))
+                    {
+                        typeList = typeList.Concat(tagList).ToList();
+                    }
+
+                    // There are other possible entries in the object 
+                    // (such as "swarmSize") but we don't care.
+                }
+                else
+                {
+                    Console.WriteLine("Unrecognized data type for 'type' " +
+                        "entry: " + typeToken.GetType());
+                }
+                bestiary_mm.monster[i].TypeList = typeList;
+
+                // =========================
+                // ac
+                JArray acJsonEntry = (JArray)monsterList[i]["ac"];
+                JToken acJsonElement = acJsonEntry[0];
+                Type eleType = acJsonElement.GetType();
+                if (eleType == typeof(JValue))
+                {
+                    bestiary_mm.monster[i].ArmorClass = (int)acJsonElement;
+                }
+                else if (eleType == typeof(JObject))
+                {
+                    bestiary_mm.monster[i].ArmorClass = (int)acJsonElement["ac"];
+                }
+                else
+                {
+                    Console.WriteLine("Unrecognized data type for 'ac' " +
+                        "entry: " + eleType);
+                }
+            }
+
             Console.WriteLine("Bestiary Loaded");
+
+            // Convert bestiary into Ancestry list items
         }
 
         
