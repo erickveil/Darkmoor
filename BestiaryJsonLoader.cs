@@ -32,6 +32,41 @@ namespace Darkmoor
             Console.WriteLine("All bestiaries loaded.");
         }
 
+        public List<Ancestry> ExportAsAncestryList()
+        {
+            var ancestryList = new List<Ancestry>();
+            var allowedTypeList = new List<string> { "humanoid" };
+
+            foreach (var bestiary in BestiaryList)
+            {
+                foreach (var monster in bestiary.monster)
+                {
+                    foreach (var validType in allowedTypeList)
+                    {
+                        if (!monster.TypeList.Contains(validType)) 
+                        { 
+                            continue; 
+                        }
+                        var ancestry = AsAncestry(monster);
+                        ancestryList.Add(ancestry);
+                    }
+
+                }
+
+            }
+
+            return ancestryList;
+        }
+
+        public Ancestry AsAncestry(BestiaryMonster monster)
+        {
+            var ancestry = new Ancestry();
+
+            // Todo: convert ancestries
+
+            return ancestry;
+        }
+
         public void LoadJsonMonsters(string filename)
         {
             // load files
