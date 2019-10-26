@@ -55,6 +55,7 @@
     <Compile Include="Ancestry.cs" />
     <Compile Include="AncestryIndex.cs" />
     <Compile Include="Battle.cs" />
+    <Compile Include="BestiaryJsonLoader.cs" />
     <Compile Include="Bestiary.cs" />
     <Compile Include="BestiaryMonster.cs" />
     <Compile Include="BestiaryMonsterAction.cs" />
