@@ -169,6 +169,45 @@ namespace Darkmoor
                     Console.WriteLine("Unrecognized data type for 'ac' " +
                         "entry: " + eleType);
                 }
+
+                // ========================
+                // ToHit (action entries)
+                JArray actionList = (JArray)monsterList[i]["action"];
+                if (!(actionList is null)) {
+                    for (int n = 0; n < actionList.Count; ++n)
+                    {
+                        var actionJObj = (JObject)actionList[n];
+                        var monsterActionObj = new BestiaryMonsterAction();
+                        monsterActionObj.name = (string)actionJObj["name"];
+                        var actionEntryJList = (JArray)actionJObj["entries"];
+                        foreach (var actionEntryJToken in actionEntryJList)
+                        {
+                            Type tokenType = actionEntryJToken.GetType();
+                            if (tokenType == typeof(JValue))
+                            {
+                                monsterActionObj.ActionEntries.Add((string)actionEntryJToken);
+                            }
+                            else if (tokenType == typeof(JObject))
+                            {
+                                var actionEntryJObj = (JObject)actionEntryJToken;
+                                var actionEntryItemJList = (JArray)actionEntryJObj["items"];
+                                foreach (var actionItemEntry in actionEntryItemJList)
+                                {
+                                    var actionItemJObj = (JObject)actionItemEntry;
+                                    monsterActionObj.ActionEntries.Add((string)actionItemJObj["entry"]);
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Unrecognized action entry type: " + tokenType);
+                            }
+                        }
+                        bestiary_mm.monster[i].action[n] = monsterActionObj;
+                    }
+                }
+
+                // ======================
+
             }
 
             Console.WriteLine("Bestiary Loaded");

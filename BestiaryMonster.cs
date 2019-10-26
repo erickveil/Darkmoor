@@ -10,6 +10,8 @@ namespace Darkmoor
     {
         public string name;
         public string size;
+        public List<BestiaryMonsterAction> action = 
+            new List<BestiaryMonsterAction>();
 
 
         private List<string> typeList = new List<string>();

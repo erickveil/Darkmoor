@@ -57,6 +57,7 @@
     <Compile Include="Battle.cs" />
     <Compile Include="Bestiary.cs" />
     <Compile Include="BestiaryMonster.cs" />
+    <Compile Include="BestiaryMonsterAction.cs" />
     <Compile Include="Civilization.cs" />
     <Compile Include="DataSaver.cs" />
     <Compile Include="Dice.cs" />
