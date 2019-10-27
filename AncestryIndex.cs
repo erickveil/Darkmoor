@@ -17,13 +17,39 @@ namespace Darkmoor
         RandomTable<Ancestry> _ancestryTable;
 
         Dice _dice;
+        bool _isLoaded = false;
 
-        public AncestryIndex()
+        private static AncestryIndex _instance = null;
+
+        /// <summary>
+        /// Index of all possible ancestries.
+        /// This reference is a singleton, because we only need one instance
+        /// and once loaded, it never changes.
+        /// 
+        /// It provides the blueprints for all populations.
+        /// </summary>
+        private AncestryIndex()
         {
             _dice = Dice.Instance;
             _ancestryTable = new RandomTable<Ancestry>();
         }
 
+        /// <summary>
+        /// Get an instance of this singelton.
+        /// </summary>
+        public static AncestryIndex Instance
+        {
+            get
+            {
+                if (_instance is null) { _instance = new AncestryIndex(); }
+                return _instance;
+            }
+        }
+
+        /// <summary>
+        /// Old method used in the initial testing. Now ancestries are loaded
+        /// from files so you can control what is included in your world.
+        /// </summary>
         public void LoadConstantAncestries()
         {
             var nameList = new List<string> { 
@@ -45,12 +71,22 @@ namespace Darkmoor
             }
         }
 
+        /// <summary>
+        /// Loads all ancestries from various files.
+        /// </summary>
         public void LoadAllSources()
         {
+            if (_isLoaded) { return; }
+            _isLoaded = true;
+
             LoadCsvAncestries();
             LoadJsonAncestries();
         }
 
+        /// <summary>
+        /// CSV ancestries are easy to create by users who want to add their 
+        /// own or control available ancestries via whitelist.
+        /// </summary>
         public void LoadCsvAncestries()
         {
             try
@@ -109,6 +145,11 @@ namespace Darkmoor
 
         }
 
+        /// <summary>
+        /// A specially formatted JSON file of D&D creatures can be provided.
+        /// These JSON files are not included with this repo, as they contain
+        /// monsters that I don't have the license for.
+        /// </summary>
         public void LoadJsonAncestries()
         {
             var loader = new BestiaryJsonLoader();
@@ -142,6 +183,10 @@ namespace Darkmoor
             }
         }
 
+        /// <summary>
+        /// Gets a random ancestry from the table.
+        /// </summary>
+        /// <returns></returns>
         public Ancestry GetRandomAncestry()
         {
             return _ancestryTable.GetResult();

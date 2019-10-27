@@ -9,10 +9,18 @@ using System.IO;
 
 namespace Darkmoor
 {
+    /// <summary>
+    /// Loads "bestiaries" which are special JSON formatted entries of 
+    /// monsters. These JSON files are not included in this repository
+    /// because I do not own the license for their distribution.
+    /// </summary>
     class BestiaryJsonLoader
     {
         public List<Bestiary> BestiaryList = new List<Bestiary>();
 
+        /// <summary>
+        /// Bestiaries are spread over multiple files.
+        /// </summary>
         public void LoadAllBestiaries()
         {
             var fileList = new List<string> { "bestiary-mm.json"};
@@ -32,6 +40,11 @@ namespace Darkmoor
             Console.WriteLine("All bestiaries loaded.");
         }
 
+        /// <summary>
+        /// Export all loaded bestiaries as a list of Ancestry objects for use
+        /// by this program.
+        /// </summary>
+        /// <returns></returns>
         public List<Ancestry> ExportAsAncestryList()
         {
             var ancestryList = new List<Ancestry>();
@@ -58,6 +71,11 @@ namespace Darkmoor
             return ancestryList;
         }
 
+        /// <summary>
+        /// Converts a single bestiary monster into an Ancestry object
+        /// </summary>
+        /// <param name="monster"></param>
+        /// <returns></returns>
         public Ancestry AsAncestry(BestiaryMonster monster)
         {
             var ancestry = new Ancestry();
@@ -90,7 +108,9 @@ namespace Darkmoor
         /// <returns></returns>
         private int _parseHitDice(BestiaryMonsterHp hpObj)
         {
-            return (int)(((hpObj.average - 1) * 2) * 0.125);
+            int hd = (int)(((hpObj.average - 1) * 2) * 0.125);
+            if (hd < 1) { hd = 1; }
+            return hd;
         }
 
         private int _calcNumAttacks(List<BestiaryMonsterAction> actionList)
@@ -138,6 +158,10 @@ namespace Darkmoor
             return toHit;
         }
 
+        /// <summary>
+        /// Loads a single bestiary
+        /// </summary>
+        /// <param name="filename"></param>
         public void LoadJsonMonsters(string filename)
         {
             // load files
