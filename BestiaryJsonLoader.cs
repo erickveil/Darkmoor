@@ -88,11 +88,12 @@ namespace Darkmoor
             ancestry.HitDice = _parseHitDice(monster.hp);
             ancestry.MoraleBonus = (int)((monster.Wis - 10) * 0.5);
 
-            if (monster.TypeList.Contains("humanoid"))
-            {
-                ancestry.MinAppearing = 180;
-                ancestry.MaxAppearing = 220;
-            }
+            float baseAppearing = 200 / ancestry.HitDice;
+            float mod = baseAppearing * 0.15f;
+            float fMin = baseAppearing - mod;
+            float fMax = baseAppearing + mod;
+            ancestry.MinAppearing = (int)fMin;
+            ancestry.MaxAppearing = (int)fMax;
 
             return ancestry;
         }
