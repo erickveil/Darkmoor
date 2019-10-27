@@ -14,9 +14,6 @@ namespace Darkmoor
     /// To track actual populations of this ancestry in the world, 
     /// use a seperate class, called Population.
     /// This Ancestry class initalizes a Population.
-    /// 
-    /// CSV parsing: 
-    /// https://stackoverflow.com/questions/2081418/parsing-csv-files-in-c-with-header
     /// </summary>
     class Ancestry
     {

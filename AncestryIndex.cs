@@ -82,13 +82,20 @@ namespace Darkmoor
                             + entryList.Count() + " members: " + record);
                     }
 
-                    _fillIntEntry(entryList, 1, out ancestry.MinAppearing, ancestry.Name + " MinAppearing");
-                    _fillIntEntry(entryList, 2, out ancestry.MaxAppearing, ancestry.Name + " MaxAppearing");
-                    _fillIntEntry(entryList, 3, out ancestry.BaseAc, ancestry.Name + " BaseAc");
-                    _fillIntEntry(entryList, 4, out ancestry.BaseToHit, ancestry.Name + " BaseToHit");
-                    _fillIntEntry(entryList, 5, out ancestry.BaseNumAttacks, ancestry.Name + " NumAttacks");
-                    _fillIntEntry(entryList, 6, out ancestry.HitDice, ancestry.Name + " HitDice");
-                    _fillIntEntry(entryList, 7, out ancestry.MoraleBonus, ancestry.Name + " MoraleBonus");
+                    _fillIntEntry(entryList, 1, out ancestry.MinAppearing, 
+                        ancestry.Name + " MinAppearing");
+                    _fillIntEntry(entryList, 2, out ancestry.MaxAppearing, 
+                        ancestry.Name + " MaxAppearing");
+                    _fillIntEntry(entryList, 3, out ancestry.BaseAc, 
+                        ancestry.Name + " BaseAc");
+                    _fillIntEntry(entryList, 4, out ancestry.BaseToHit, 
+                        ancestry.Name + " BaseToHit");
+                    _fillIntEntry(entryList, 5, out ancestry.BaseNumAttacks, 
+                        ancestry.Name + " NumAttacks");
+                    _fillIntEntry(entryList, 6, out ancestry.HitDice, 
+                        ancestry.Name + " HitDice");
+                    _fillIntEntry(entryList, 7, out ancestry.MoraleBonus, 
+                        ancestry.Name + " MoraleBonus");
 
                     _ancestryTable.AddItem(ancestry);
                 }
@@ -96,8 +103,8 @@ namespace Darkmoor
             }
             catch (Exception ex)
             {
-                Console.WriteLine("\n-----\nERROR: Failed to load Ancestry file: " 
-                    + ex.Message + "\n-----\n");
+                Console.WriteLine("\n-----\nERROR: Failed to load Ancestry " +
+                    "file: " + ex.Message + "\n-----\n");
             }
 
         }
@@ -106,9 +113,13 @@ namespace Darkmoor
         {
             var loader = new BestiaryJsonLoader();
             loader.LoadAllBestiaries();
+            List<Ancestry> ancestryList = loader.ExportAsAncestryList();
+            // TODO: add ancestryList to ancestries
+            foreach (var ancestry in ancestryList)
+            {
+                _ancestryTable.AddItem(ancestry);
+            }
         }
-
-        
 
         private void _fillStringEntry(List<string> entryList, int index, 
             out string target)

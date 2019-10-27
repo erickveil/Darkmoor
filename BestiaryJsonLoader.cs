@@ -63,8 +63,79 @@ namespace Darkmoor
             var ancestry = new Ancestry();
 
             // Todo: convert ancestries
+            ancestry.Name = monster.name;
+            ancestry.BaseAc = monster.ArmorClass;
+            ancestry.BaseToHit = _calcBaseToHit(monster.action);
+            ancestry.BaseNumAttacks = _calcNumAttacks(monster.action);
+            ancestry.HitDice = _parseHitDice(monster.hp);
+            ancestry.MoraleBonus = (int)((monster.Wis - 10) * 0.5);
+
+            if (monster.TypeList.Contains("humanoid"))
+            {
+                ancestry.MinAppearing = 180;
+                ancestry.MaxAppearing = 220;
+            }
 
             return ancestry;
+        }
+
+        /// <summary>
+        /// Average hp times 2 is max hit points.
+        /// Divided by 8 (or multiplied by 0.125) gets number of d8s that are
+        /// rolled.
+        /// Counts CON modifiers as HD, so high CON monsters appear to have
+        /// more HD.
+        /// </summary>
+        /// <param name="hpObj"></param>
+        /// <returns></returns>
+        private int _parseHitDice(BestiaryMonsterHp hpObj)
+        {
+            return (int)(((hpObj.average - 1) * 2) * 0.125);
+        }
+
+        private int _calcNumAttacks(List<BestiaryMonsterAction> actionList)
+        {
+            int numAtt = 1;
+
+            foreach (var action in actionList)
+            {
+                if (!action.name.Contains("Multiattack")) { continue; }
+                var entryList = action.ActionEntries;
+                foreach (var entry in entryList)
+                {
+                    int attFound = 0;
+                    if (entry.Contains("two")) { attFound = 2; }
+                    if (entry.Contains("three")) { attFound = 3; }
+                    if (entry.Contains("four")) { attFound = 4; }
+                    if (entry.Contains("five")) { attFound = 5; }
+                    if (attFound > numAtt) { numAtt = attFound; }
+                }
+            }
+            // Console.WriteLine("Num Att: " + numAtt);
+            return numAtt;
+        }
+
+        private int _calcBaseToHit(List<BestiaryMonsterAction> actionList)
+        {
+            int toHit = 0;
+            foreach (var action in actionList)
+            {
+                var entryList = action.ActionEntries;
+                foreach (var entry in entryList)
+                {
+                    if (!entry.Contains("{@hit")) { continue; }
+                    int attPos = entry.IndexOf("{@hit");
+                    int valPos = attPos + 6;
+                    string toHitStr = entry.Substring(valPos, 1);
+                    bool success = Int32.TryParse(toHitStr, out int hitMod);
+                    //Console.WriteLine("found " + toHitStr + " success: " + success);
+                    if (!success) { continue; }
+                    if (hitMod > toHit) { toHit = hitMod; }
+
+                }
+
+            }
+            return toHit;
         }
 
         public void LoadJsonMonsters(string filename)
