@@ -22,9 +22,12 @@ namespace Darkmoor
         public int YCoord = 0;
         public List<Lair> LairList = new List<Lair>();
         public HistoryLog History = new HistoryLog();
+        public List<string> WanderingMonsterPool = new List<string>();
 
         readonly Dice _dice;
         private readonly HexDataIndex _worldMap;
+
+
 
         /// <summary>
         /// Constructor

@@ -51,6 +51,9 @@ namespace Darkmoor
             HomeCiv = civ;
             HomeHex = hex;
 
+            // set wandering
+            HomeHex.WanderingMonsterPool.Add(civ.Patricians.BaseAncestry.Name);
+
             SubhexIndex = _dice.RandomNumber(1, HexData.SUB_HEXES);
             var hexName = hex.getNameWithLoc();
             _recordFounding(civ, hexName);
@@ -69,6 +72,7 @@ namespace Darkmoor
             HomeCiv = settlers;
             SubhexIndex = subHexIndex;
             HomeHex = hex;
+            HomeHex.WanderingMonsterPool.Add(settlers.Patricians.BaseAncestry.Name);
             var hexName = hex.getNameWithLoc();
             _recordFounding(settlers, hexName);
         }
@@ -143,6 +147,7 @@ namespace Darkmoor
 
         public void MoveCivIn(Civilization civ)
         {
+            HomeHex.WanderingMonsterPool.Add(civ.Patricians.BaseAncestry.Name);
             HomeCiv = civ;
             string record = civ.GetFullName() + " have taken control of "
                 + GetFullName() + ".";
