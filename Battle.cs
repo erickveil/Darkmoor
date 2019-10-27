@@ -76,6 +76,10 @@ namespace Darkmoor
 
                 defenderBase.MoveCivIn(attacker);
                 attackerBase.ForceAbandon();
+
+                defenderBase.Treasure += attackerBase.Treasure;
+                attackerBase.Treasure = 0;
+
                 DefenderState = CombatantState.COMBATANT_STATE_ELIMINATED;
                 return;
             }
@@ -139,6 +143,9 @@ namespace Darkmoor
                     MoveLosers(defender, defenderLands, defenderBaseName);
                     defenderBase.MoveCivIn(attacker);
                     attackerBase.ForceAbandon();
+
+                    defenderBase.Treasure += attackerBase.Treasure;
+                    attackerBase.Treasure = 0;
                 }
                 else
                 {
@@ -164,6 +171,9 @@ namespace Darkmoor
                 MoveLosers(defender, defenderLands, defenderBaseName);
                 defenderBase.MoveCivIn(attacker);
                 attackerBase.ForceAbandon();
+
+                defenderBase.Treasure += attackerBase.Treasure;
+                attackerBase.Treasure = 0;
             }
             else // attacker lost
             {
@@ -205,6 +215,9 @@ namespace Darkmoor
                 attacker.History.addRecord(record, isLogged: false);
 
                 defenderBase.MoveCivIn(attacker);
+
+                defenderBase.Treasure += 1;
+
                 DefenderState = CombatantState.COMBATANT_STATE_ELIMINATED;
                 return;
             }
@@ -268,6 +281,7 @@ namespace Darkmoor
                     string defenderBaseName = defenderBase.Name;
                     MoveLosers(defender, defenderLands, defenderBaseName);
                     defenderBase.MoveCivIn(attacker);
+                    defenderBase.Treasure += 1;
                 }
                 else
                 {
@@ -293,6 +307,7 @@ namespace Darkmoor
                 string defenderBaseName = defenderBase.Name;
                 MoveLosers(defender, defenderLands, defenderBaseName);
                 defenderBase.MoveCivIn(attacker);
+                defenderBase.Treasure += 1;
             }
             else // attacker lost
             {

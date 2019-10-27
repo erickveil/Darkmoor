@@ -21,6 +21,7 @@ namespace Darkmoor
         public Civilization HomeCiv;
         public int SubhexIndex = 0;
         public HistoryLog History = new HistoryLog();
+        public int Treasure = 0;
 
         private HexData _homeHex;
         private readonly Dice _dice;
@@ -50,6 +51,7 @@ namespace Darkmoor
             civ.InitializeAsRandomCiv();
             HomeCiv = civ;
             HomeHex = hex;
+            Treasure = 1;
 
             // set wandering
             HomeHex.WanderingMonsterPool.Add(civ.Patricians.BaseAncestry.Name);

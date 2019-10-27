@@ -48,6 +48,7 @@ namespace Darkmoor
                 // no battle. settle in unclaimed land.
                 var lair = new Lair();
                 lair.InitializeAsSettlerLair(invaders, subHexLoc, hex);
+                lair.Treasure = 1;
                 hex.LairList.Add(lair);
                 return;
             }
@@ -148,6 +149,11 @@ namespace Darkmoor
                     targetHex);
                 targetHex.LairList.Add(newLair);
                 lair.ForceAbandon();
+
+                // move the treasure
+                newLair.Treasure = lair.Treasure;
+                lair.Treasure = 0;
+
                 return;
             }
             // Going to have to fight for the space.
