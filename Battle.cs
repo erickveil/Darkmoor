@@ -340,7 +340,7 @@ namespace Darkmoor
             {
                 ++NumRounds;
                 Console.WriteLine("Battle: Round " + NumRounds);
-                ExecuteBattleRound();
+                ExecuteBattleRound(NumRounds);
             } while (
             (AttackerState == CombatantState.COMBATANT_STATE_RALLIED) && 
             (DefenderState == CombatantState.COMBATANT_STATE_RALLIED)
@@ -433,7 +433,7 @@ namespace Darkmoor
         /// <summary>
         /// Run a single round of combat
         /// </summary>
-        public void ExecuteBattleRound()
+        public void ExecuteBattleRound(int numRounds)
         {
             // TODO: should these calculations be performaed by the population obj?
             int attackerForces = GetTotalCombatants(AttackerList);
@@ -573,7 +573,22 @@ namespace Darkmoor
                     DefenderState = CombatantState.COMBATANT_STATE_ROUTED;
                 }
             }
-            // else stalemate, no moaral checks
+            else if (numRounds > 10)
+            {
+                int defenseRoll = _dice.Roll(1, 20) + defenseMoraleBonus;
+                int attackRoll = _dice.Roll(1, 20) + attackMoraleBonus;
+                if (defenseRoll < attackRoll)
+                {
+                    DefenderState = CombatantState.COMBATANT_STATE_ROUTED;
+                    Console.WriteLine("Defender routes from War Fatigue.");
+                }
+                else
+                {
+                    AttackerState = CombatantState.COMBATANT_STATE_ROUTED;
+                    Console.WriteLine("Attacker routes form War Fatugue.");
+                }
+            }
+            // else stalemate, no moaral checks until round 10
 
             // Very unlikely, but check for genocide
             if (GetTotalCombatants(AttackerList) == 0)

@@ -48,7 +48,16 @@ namespace Darkmoor
         public List<Ancestry> ExportAsAncestryList()
         {
             var ancestryList = new List<Ancestry>();
-            var allowedTypeList = new List<string> { "humanoid" };
+            var allowedTypeList = new List<string> 
+            { 
+                "aberration",
+                "dragon",
+                "elemental",
+                "fey",
+                "giant",
+                "monstrosity",
+                "humanoid" 
+            };
 
             foreach (var bestiary in BestiaryList)
             {
@@ -109,7 +118,7 @@ namespace Darkmoor
         /// <returns></returns>
         private int _parseHitDice(BestiaryMonsterHp hpObj)
         {
-            int hd = (int)(((hpObj.average - 1) * 2) * 0.125);
+            int hd = (int)(((hpObj.average - 1)) * 0.125);
             if (hd < 1) { hd = 1; }
             return hd;
         }
