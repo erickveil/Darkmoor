@@ -23,20 +23,16 @@ namespace Darkmoor
         /// </summary>
         public void LoadAllBestiaries()
         {
-            var fileList = new List<string> { "bestiary-mm.json"};
+            var fileList = new List<string> 
+            { 
+                "bestiary-dmg.json",
+                "bestiary-mm.json",
+                "bestiary-mtf.json",
+                "bestiary-phb.json",
+                "bestiary-vgm.json"
+            };
 
-            foreach (string file in fileList)
-            {
-                try
-                {
-                    LoadJsonMonsters(file);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("WARNING: Failed to load bestiary file " 
-                        + file + ". Reason: " + ex.Message);
-                }
-            }
+            foreach (string file in fileList) { LoadJsonMonsters(file); }
             Console.WriteLine("All bestiaries loaded.");
         }
 
@@ -176,7 +172,12 @@ namespace Darkmoor
         {
             // load files
             Bestiary bestiary;
-            string jsonData = File.ReadAllText(filename);
+            string jsonData = "";
+            try { jsonData = File.ReadAllText(filename); }
+            catch(Exception) {
+                Console.WriteLine("Skipping " + filename);
+                return; 
+            }
 
             // easy items to deserialize
             bestiary = JsonConvert.DeserializeObject<Bestiary>(jsonData);
@@ -191,29 +192,46 @@ namespace Darkmoor
                 _loadActionData(monsterList, i, bestiary);
             }
 
+            // clear out copy entries
+            bestiary.monster.RemoveAll(monster => monster.IsCopy);
+
             BestiaryList.Add(bestiary);
+            Console.WriteLine("Loaded " + filename);
 
         } // loadJsonMonsters
+
+        private bool _isCopyOfOtherMonster(JObject monster)
+        {
+            JToken copyNode = monster["_copy"];
+            return !(copyNode is null);
+        }
 
         private void _loadTypeData(JArray monsterList, int monsterIndex, 
             Bestiary bestiary)
         {
-                JToken typeToken = monsterList[monsterIndex]["type"];
-                var typeList = new List<string>();
-                if (typeToken.GetType() == typeof(JValue))
-                {
-                    typeList.Add((string)typeToken);
-                }
-                else if (typeToken.GetType() == typeof(JObject))
-                {
-                    typeList = _parseTypeObjext(typeToken, typeList);
-                }
-                else
-                {
-                    Console.WriteLine("Unrecognized data type for 'type' " +
-                        "entry: " + typeToken.GetType());
-                }
-                bestiary.monster[monsterIndex].TypeList = typeList;
+            JObject monster = (JObject)monsterList[monsterIndex];
+            if (_isCopyOfOtherMonster(monster)) 
+            {
+                bestiary.monster[monsterIndex].IsCopy = true;
+                return; 
+            }
+            JToken typeToken = monster["type"];
+            var typeList = new List<string>();
+
+            if (typeToken.GetType() == typeof(JValue))
+            {
+                typeList.Add((string)typeToken);
+            }
+            else if (typeToken.GetType() == typeof(JObject))
+            {
+                typeList = _parseTypeObjext(typeToken, typeList);
+            }
+            else
+            {
+                Console.WriteLine("Unrecognized data type for 'type' " +
+                    "entry: " + typeToken.GetType());
+            }
+            bestiary.monster[monsterIndex].TypeList = typeList;
         }
 
         private List<string> _parseTypeObjext(JToken typeToken, 
@@ -227,7 +245,11 @@ namespace Darkmoor
             var tagsJsonList = (JArray)typeObj["tags"];
 
             // not all type objects have a tags list
-            var tagList = tagsJsonList?.ToObject<List<string>>();
+            List<string> tagList = null;
+            try { tagList = tagsJsonList?.ToObject<List<string>>(); }
+            catch (Exception) {
+                Console.WriteLine("Skipping NPC");
+            }
             if (!(tagList is null))
             {
                 typeList = typeList.Concat(tagList).ToList();
@@ -241,7 +263,9 @@ namespace Darkmoor
         private void _loadAcData(JArray monsterList, int monsterIndex, 
             Bestiary bestiary)
         {
-            JArray acJsonEntry = (JArray)monsterList[monsterIndex]["ac"];
+            JObject monster = (JObject)monsterList[monsterIndex];
+            if (_isCopyOfOtherMonster(monster)) { return; }
+            JArray acJsonEntry = (JArray)monster["ac"];
             JToken acJsonElement = acJsonEntry[0];
             Type eleType = acJsonElement.GetType();
             if (eleType == typeof(JValue))
@@ -263,7 +287,9 @@ namespace Darkmoor
         private void _loadActionData(JArray monsterList, int monsterIndex, 
             Bestiary bestiary)
         {
-            JArray actionList = (JArray)monsterList[monsterIndex]["action"];
+            JObject monster = (JObject)monsterList[monsterIndex];
+            if (_isCopyOfOtherMonster(monster)) { return; }
+            JArray actionList = (JArray)monster["action"];
             if (!(actionList is null))
             {
                 _parseActionList(actionList, bestiary, monsterIndex);
@@ -314,8 +340,9 @@ namespace Darkmoor
         private void _parseActionSubItems(JArray actionEntryItemJList, 
             BestiaryMonsterAction monsterActionObj)
         {
-            foreach (var actionItemEntry in actionEntryItemJList)
+            foreach (JToken actionItemEntry in actionEntryItemJList)
             {
+                if (actionItemEntry.GetType() != typeof(JObject)) { continue; }
                 var actionItemJObj = (JObject)actionItemEntry;
                 monsterActionObj.ActionEntries.Add(
                     (string)actionItemJObj["entry"]);

@@ -31,5 +31,9 @@ namespace Darkmoor
 
         private int ac;
         public int ArmorClass { get => ac; set => ac = value; }
+
+        private bool _isCopy = false;
+        public bool IsCopy { get => _isCopy; set => _isCopy = value; }
+
     }
 }

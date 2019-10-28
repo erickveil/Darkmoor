@@ -139,8 +139,7 @@ namespace Darkmoor
             }
             catch (Exception ex)
             {
-                Console.WriteLine("\n-----\nERROR: Failed to load Ancestry " +
-                    "file: " + ex.Message + "\n-----\n");
+                Console.WriteLine("Skipping ancestries.csv");
             }
 
         }
