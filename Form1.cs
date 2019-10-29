@@ -18,9 +18,6 @@ namespace Darkmoor
         {
             InitializeComponent();
 
-            _gameData = new DataSaver();
-            _gameData.ProgramData = new HexDataIndex();
-            _gameData.ProgramData.GenerateWorld(3, 3);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -46,6 +43,16 @@ namespace Darkmoor
         private void bu_load_Click(object sender, EventArgs e)
         {
             _gameData.Load();
+        }
+
+        private void but_newWorld_Click(object sender, EventArgs e)
+        {
+            _gameData = new DataSaver();
+            _gameData.ProgramData.ClearAllData();
+            _gameData.ProgramData = new HexDataIndex();
+            int width = (int)(nud_startWidth.Value);
+            int height = (int)(nud_startHeight.Value);
+            _gameData.ProgramData.GenerateWorld(width, height);
         }
     }
 }
