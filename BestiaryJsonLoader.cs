@@ -104,7 +104,68 @@ namespace Darkmoor
                     }
                 }
             }
+            return ancestryList;
+        }
 
+        public List<Ancestry> ExportFloraAndFauna(int tier)
+        {
+            var ancestryList = new List<Ancestry>();
+            var allowedTypeList = new List<string> 
+            { 
+                "beast",
+                "plant"
+            };
+
+            foreach (var bestiary in BestiaryList)
+            {
+                foreach (var monster in bestiary.monster)
+                {
+                    foreach (var validType in allowedTypeList)
+                    {
+                        if (!monster.TypeList.Contains(validType)) 
+                        { 
+                            continue; 
+                        }
+                        int xpValue = monster.GetXpValue();
+                        int monsterTier = BestiaryMonster.GetTier(xpValue);
+                        if (monsterTier != tier) { continue; }
+                        var ancestry = AsAncestry(monster);
+                        ancestryList.Add(ancestry);
+                    }
+                }
+            }
+            return ancestryList;
+        }
+
+        public List<Ancestry> ExportDungeonEcology(int tier)
+        {
+            var ancestryList = new List<Ancestry>();
+            var allowedTypeList = new List<string> 
+            { 
+                "construct",
+                "monstrosity",
+                "ooze",
+                "undead"
+            };
+
+            foreach (var bestiary in BestiaryList)
+            {
+                foreach (var monster in bestiary.monster)
+                {
+                    foreach (var validType in allowedTypeList)
+                    {
+                        if (!monster.TypeList.Contains(validType)) 
+                        { 
+                            continue; 
+                        }
+                        int xpValue = monster.GetXpValue();
+                        int monsterTier = BestiaryMonster.GetTier(xpValue);
+                        if (monsterTier != tier) { continue; }
+                        var ancestry = AsAncestry(monster);
+                        ancestryList.Add(ancestry);
+                    }
+                }
+            }
             return ancestryList;
         }
 

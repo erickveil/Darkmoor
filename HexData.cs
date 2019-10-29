@@ -15,14 +15,18 @@ namespace Darkmoor
     /// </summary>
     class HexData
     {
-        public const int SUB_HEXES = 7;
+        public const int SUB_HEXES = 9;
 
         public string Name;
         public int XCoord = 0;
         public int YCoord = 0;
         public List<Lair> LairList = new List<Lair>();
         public HistoryLog History = new HistoryLog();
+
         public List<string> WanderingMonsterPool = new List<string>();
+        public List<string> NaturalEncounterPool = new List<string>();
+        public List<string> DungeonEcologyPool = new List<string>();
+
         public int Tier;
 
         readonly Dice _dice;
@@ -68,6 +72,42 @@ namespace Darkmoor
 
             _setTier(origin.Item1, origin.Item2, tierWidth);
 
+            var creatureSource = AncestryIndex.Instance;
+            creatureSource.LoadAllSources();
+            // init nature
+            int numNatural = _dice.Roll(2, 4) + 1;
+            for (int i = 0; i < numNatural; ++i)
+            {
+                var naturalCreature = 
+                    creatureSource.GetRandomNaturalAncestry(Tier);
+                var tier = Tier;
+                while (naturalCreature is null && tier > 0)
+                {
+                    --tier;
+                    naturalCreature = creatureSource.GetRandomAncestry(tier);
+                }
+                if (naturalCreature is null) { break; }
+                NaturalEncounterPool.Add(naturalCreature.Name);
+            }
+
+            // init dungeons
+            int numMonsters = _dice.Roll(2, 4) + 1;
+            for (int i = 0; i < numMonsters; ++i)
+            {
+                var dungeonLurkers =
+                    creatureSource.GetRandomDungeonAncestry(Tier);
+                var tier = Tier;
+                while (dungeonLurkers is null && tier > 0)
+                {
+                    --tier;
+                    dungeonLurkers = 
+                        creatureSource.GetRandomDungeonAncestry(tier);
+                }
+                if (dungeonLurkers is null) { break; }
+                DungeonEcologyPool.Add(dungeonLurkers.Name);
+            }
+
+            // init lairs
             int numLairs = _dice.Roll(1, 6) - 1;
             for (int i = 0; i < numLairs; ++i)
             {

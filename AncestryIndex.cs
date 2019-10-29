@@ -20,6 +20,16 @@ namespace Darkmoor
         RandomTable<Ancestry> _tier3;
         RandomTable<Ancestry> _tier4;
 
+        RandomTable<Ancestry> _natural1 = new RandomTable<Ancestry>();
+        RandomTable<Ancestry> _natural2 = new RandomTable<Ancestry>();
+        RandomTable<Ancestry> _natural3 = new RandomTable<Ancestry>();
+        RandomTable<Ancestry> _natural4 = new RandomTable<Ancestry>();
+
+        RandomTable<Ancestry> _dungeon1 = new RandomTable<Ancestry>();
+        RandomTable<Ancestry> _dungeon2 = new RandomTable<Ancestry>();
+        RandomTable<Ancestry> _dungeon3 = new RandomTable<Ancestry>();
+        RandomTable<Ancestry> _dungeon4 = new RandomTable<Ancestry>();
+
         Dice _dice;
         bool _isLoaded = false;
 
@@ -161,7 +171,9 @@ namespace Darkmoor
         {
             var loader = new BestiaryJsonLoader();
             loader.LoadAllBestiaries();
-            List<Ancestry> ancestryList = loader.ExportAsAncestryList();
+
+            // Civilizations
+            var ancestryList = loader.ExportAsAncestryList();
             foreach (var ancestry in ancestryList)
             {
                 _ancestryTable.AddItem(ancestry);
@@ -186,6 +198,57 @@ namespace Darkmoor
             {
                 _tier4.AddItem(ancestry);
             }
+
+            // Flora and Fauna
+            var ff1 = loader.ExportFloraAndFauna(1);
+            foreach (var ancestry in ff1)
+            {
+                _natural1.AddItem(ancestry);
+                _natural2.AddItem(ancestry);
+            }
+            var ff2 = loader.ExportFloraAndFauna(2);
+            foreach (var ancestry in ff2)
+            {
+                _natural2.AddItem(ancestry);
+                _natural3.AddItem(ancestry);
+            }
+            var ff3 = loader.ExportFloraAndFauna(3);
+            foreach (var ancestry in ff3)
+            {
+                _natural3.AddItem(ancestry);
+                _natural4.AddItem(ancestry);
+            }
+            var ff4 = loader.ExportFloraAndFauna(4);
+            foreach (var ancestry in ff4)
+            {
+                _natural4.AddItem(ancestry);
+            }
+
+            // dungeon material
+            var dun1 = loader.ExportDungeonEcology(1);
+            foreach (var ancestry in dun1)
+            {
+                _dungeon1.AddItem(ancestry);
+                _dungeon2.AddItem(ancestry);
+            }
+            var dun2 = loader.ExportDungeonEcology(2);
+            foreach (var ancestry in dun2)
+            {
+                _dungeon2.AddItem(ancestry);
+                _dungeon3.AddItem(ancestry);
+            }
+            var dun3 = loader.ExportDungeonEcology(3);
+            foreach (var ancestry in dun3)
+            {
+                _dungeon3.AddItem(ancestry);
+                _dungeon4.AddItem(ancestry);
+            }
+            var dun4 = loader.ExportDungeonEcology(4);
+            foreach (var ancestry in dun4)
+            {
+                _dungeon4.AddItem(ancestry);
+            }
+
         }
 
         private void _fillStringEntry(List<string> entryList, int index, 
@@ -230,6 +293,22 @@ namespace Darkmoor
             if (tier == 2) { return _tier2.GetResult(); }
             if (tier == 3) { return _tier3.GetResult(); }
             return _tier4.GetResult();
+        }
+
+        public Ancestry GetRandomNaturalAncestry(int tier)
+        {
+            if (tier == 1) { return _natural1.GetResult(); }
+            if (tier == 2) { return _natural2.GetResult(); }
+            if (tier == 3) { return _natural3.GetResult(); }
+            return _natural4.GetResult();
+        }
+
+        public Ancestry GetRandomDungeonAncestry(int tier)
+        {
+            if (tier == 1) { return _dungeon1.GetResult(); }
+            if (tier == 2) { return _dungeon2.GetResult(); }
+            if (tier == 3) { return _dungeon3.GetResult(); }
+            return _dungeon4.GetResult();
         }
 
 
