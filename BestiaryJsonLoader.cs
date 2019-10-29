@@ -190,6 +190,7 @@ namespace Darkmoor
                 _loadTypeData(monsterList, i, bestiary);
                 _loadAcData(monsterList, i, bestiary);
                 _loadActionData(monsterList, i, bestiary);
+                _loadCr(monsterList, i, bestiary);
             }
 
             // clear out copy entries
@@ -199,6 +200,35 @@ namespace Darkmoor
             Console.WriteLine("Loaded " + filename);
 
         } // loadJsonMonsters
+
+        private void _loadCr(JArray monsterList, int monsterIndex, 
+            Bestiary bestiary)
+        {
+            JObject monster = (JObject)monsterList[monsterIndex];
+            JToken crToken = monster["cr"];
+            if (crToken is null)
+            {
+                bestiary.monster[monsterIndex].IsCopy = true;
+                return;
+            }
+
+            if (crToken.GetType() == typeof(JValue))
+            {
+                var crStr = (string)crToken;
+                bestiary.monster[monsterIndex].ChallengeRating = (string)crToken;
+                return;
+            }
+
+            if (crToken.GetType() == typeof(JObject))
+            {
+                crToken = crToken["cr"];
+                bestiary.monster[monsterIndex].ChallengeRating = (string)crToken;
+                return;
+            }
+
+            Console.WriteLine("Can't find the cr for " + monster["name"]);
+
+        }
 
         private bool _isCopyOfOtherMonster(JObject monster)
         {

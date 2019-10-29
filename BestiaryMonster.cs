@@ -21,7 +21,6 @@ namespace Darkmoor
         public int Cha;
 
 
-
         private List<string> typeList = new List<string>();
         public List<string> TypeList 
         { 
@@ -34,6 +33,9 @@ namespace Darkmoor
 
         private bool _isCopy = false;
         public bool IsCopy { get => _isCopy; set => _isCopy = value; }
+
+        private string _challengeRating;
+        public string ChallengeRating { get => _challengeRating; set => _challengeRating = value; }
 
     }
 }
