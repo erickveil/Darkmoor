@@ -49,12 +49,13 @@ namespace Darkmoor
             // Civ
             var civ = new Civilization();
             civ.InitializeAsRandomCiv(hex.Tier);
+
+            // set wandering
+            hex.WanderingMonsterPool.Add(civ.Patricians.BaseAncestry.Name);
+
             HomeCiv = civ;
             HomeHex = hex;
             Treasure = 1;
-
-            // set wandering
-            HomeHex.WanderingMonsterPool.Add(civ.Patricians.BaseAncestry.Name);
 
             SubhexIndex = _dice.RandomNumber(1, HexData.SUB_HEXES);
             var hexName = hex.getNameWithLoc();
