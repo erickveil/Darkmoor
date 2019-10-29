@@ -38,7 +38,7 @@ namespace Darkmoor
 
             // Are they invaders, or settlers?
             var invaders = new Civilization();
-            invaders.InitializeAsRandomCiv();
+            invaders.InitializeAsRandomCiv(hex.Tier);
 
             // Depends on where they land:
             int subHexLoc = _dice.Roll(1, HexData.SUB_HEXES);

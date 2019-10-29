@@ -48,7 +48,7 @@ namespace Darkmoor
             
             // Civ
             var civ = new Civilization();
-            civ.InitializeAsRandomCiv();
+            civ.InitializeAsRandomCiv(hex.Tier);
             HomeCiv = civ;
             HomeHex = hex;
             Treasure = 1;

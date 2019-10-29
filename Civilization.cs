@@ -34,13 +34,13 @@ namespace Darkmoor
         /// <summary>
         /// Generates a random population and uses that as the basis of this civ.
         /// </summary>
-        public void InitializeAsRandomCiv()
+        public void InitializeAsRandomCiv(int tier)
         {
             var nameGen = new RandomName();
             CulturalIdentity = nameGen.CreateWord();
 
             var founders = new Population();
-            founders.InitializeAsRandomPop();
+            founders.InitializeAsRandomPop(tier);
             Patricians = founders;
 
             LeaderCompetency = (_dice.Roll(2, 6) / 2);

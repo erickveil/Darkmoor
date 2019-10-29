@@ -15,6 +15,10 @@ namespace Darkmoor
     class AncestryIndex
     {
         RandomTable<Ancestry> _ancestryTable;
+        RandomTable<Ancestry> _tier1;
+        RandomTable<Ancestry> _tier2;
+        RandomTable<Ancestry> _tier3;
+        RandomTable<Ancestry> _tier4;
 
         Dice _dice;
         bool _isLoaded = false;
@@ -32,6 +36,10 @@ namespace Darkmoor
         {
             _dice = Dice.Instance;
             _ancestryTable = new RandomTable<Ancestry>();
+            _tier1 = new RandomTable<Ancestry>();
+            _tier2 = new RandomTable<Ancestry>();
+            _tier3 = new RandomTable<Ancestry>();
+            _tier4 = new RandomTable<Ancestry>();
         }
 
         /// <summary>
@@ -154,10 +162,29 @@ namespace Darkmoor
             var loader = new BestiaryJsonLoader();
             loader.LoadAllBestiaries();
             List<Ancestry> ancestryList = loader.ExportAsAncestryList();
-            // TODO: add ancestryList to ancestries
             foreach (var ancestry in ancestryList)
             {
                 _ancestryTable.AddItem(ancestry);
+            }
+            var ancestryListT1 = loader.ExportAncestryListForTier(1);
+            foreach (var ancestry in ancestryListT1)
+            {
+                _tier1.AddItem(ancestry);
+            }
+            var ancestryListT2 = loader.ExportAncestryListForTier(2);
+            foreach (var ancestry in ancestryListT2)
+            {
+                _tier2.AddItem(ancestry);
+            }
+            var ancestryListT3 = loader.ExportAncestryListForTier(3);
+            foreach (var ancestry in ancestryListT3)
+            {
+                _tier3.AddItem(ancestry);
+            }
+            var ancestryListT4 = loader.ExportAncestryListForTier(4);
+            foreach (var ancestry in ancestryListT4)
+            {
+                _tier4.AddItem(ancestry);
             }
         }
 
@@ -183,12 +210,26 @@ namespace Darkmoor
         }
 
         /// <summary>
-        /// Gets a random ancestry from the table.
+        /// Gets a random ancestry from the table of all ancestries.
         /// </summary>
         /// <returns></returns>
         public Ancestry GetRandomAncestry()
         {
             return _ancestryTable.GetResult();
+        }
+
+        /// <summary>
+        /// Gets a random ancestry whos CR falls withing the tier for a party
+        /// of 4.
+        /// </summary>
+        /// <param name="tier"></param>
+        /// <returns></returns>
+        public Ancestry GetRandomAncestry(int tier)
+        {
+            if (tier == 1) { return _tier1.GetResult(); }
+            if (tier == 2) { return _tier2.GetResult(); }
+            if (tier == 3) { return _tier3.GetResult(); }
+            return _tier4.GetResult();
         }
 
 

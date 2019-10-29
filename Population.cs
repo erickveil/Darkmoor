@@ -31,11 +31,11 @@ namespace Darkmoor
             _dice = Dice.Instance;
         }
 
-        public void InitializeAsRandomPop()
+        public void InitializeAsRandomPop(int tier)
         {
             var ancestryGen = AncestryIndex.Instance;
             ancestryGen.LoadAllSources();
-            BaseAncestry = ancestryGen.GetRandomAncestry();
+            BaseAncestry = ancestryGen.GetRandomAncestry(tier);
             Members = _dice.RandomNumber(BaseAncestry.MinAppearing, 
                 BaseAncestry.MaxAppearing);
             if (Members < 1) { Members = 1; }
