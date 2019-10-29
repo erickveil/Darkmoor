@@ -18,6 +18,9 @@ namespace Darkmoor
         public List<HexData> HexList = new List<HexData>();
         public int WorldWidth;
         public int WorldHeight;
+        public int TierOriginX;
+        public int TierOriginY;
+        public int TierWidth;
 
         public HexDataIndex()
         {
@@ -43,10 +46,30 @@ namespace Darkmoor
             HexList.Clear();
         }
 
-        public void GenerateWorld(int width, int height)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="tierOrigin">The coordinates of the lowest tier hex 
+        /// on the map.</param>
+        /// <param name="tierWidth">Width of the "tier" regions. 
+        /// Tiers go from 1 to 4.
+        /// Starting at Tier 1 at the tier origin, the surrounding hexes out 
+        /// to tierWidth will all be Tier 1.
+        /// Then the hexes surrounding that area, out to the tierWidth will be 
+        /// Tier 2, and so on in concentric circles.
+        /// The farther you get from the tierOrigin, the higher the tier.
+        /// Tier coincides with monster difficulty.
+        /// </param>
+        public void GenerateWorld(int width, int height, 
+            Tuple<int,int> tierOrigin, int tierWidth)
         {
             WorldWidth = width;
             WorldHeight = height;
+            TierOriginX = tierOrigin.Item1;
+            TierOriginY = tierOrigin.Item2;
+            TierWidth = tierWidth;
 
             for (int x = 0; x < width; ++x)
             {
@@ -96,7 +119,9 @@ namespace Darkmoor
         public HexData CreateRandomHex(int x, int y)
         {
             HexData hex = new HexData(this);
-            hex.InitializeAsRandomHex(x, y);
+            Tuple<int, int> origin = 
+                new Tuple<int, int>(TierOriginX, TierOriginY);
+            hex.InitializeAsRandomHex(x, y, origin, TierWidth);
             return hex;
         }
 

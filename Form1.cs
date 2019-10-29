@@ -52,7 +52,12 @@ namespace Darkmoor
             _gameData.ProgramData = new HexDataIndex();
             int width = (int)(nud_startWidth.Value);
             int height = (int)(nud_startHeight.Value);
-            _gameData.ProgramData.GenerateWorld(width, height);
+            var origin = new Tuple<int, int>(
+                (int)nud_originX.Value,
+                (int)nud_originY.Value);
+            int tierWidth = (int)nud_tierWidth.Value;
+            _gameData.ProgramData.GenerateWorld(width, height, origin, 
+                tierWidth);
         }
 
         private void but_resizeWorld_Click(object sender, EventArgs e)

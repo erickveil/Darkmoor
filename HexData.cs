@@ -23,6 +23,7 @@ namespace Darkmoor
         public List<Lair> LairList = new List<Lair>();
         public HistoryLog History = new HistoryLog();
         public List<string> WanderingMonsterPool = new List<string>();
+        public int Tier;
 
         readonly Dice _dice;
         private readonly HexDataIndex _worldMap;
@@ -56,13 +57,16 @@ namespace Darkmoor
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        public void InitializeAsRandomHex(int x, int y)
+        public void InitializeAsRandomHex(int x, int y, Tuple<int, int> origin,
+            int tierWidth)
         {
             var nameGen = new RandomName();
             Name = nameGen.CreateWord();
 
             XCoord = x;
             YCoord = y;
+
+            _setTier(origin.Item1, origin.Item2, tierWidth);
 
             int numLairs = _dice.Roll(1, 6) - 1;
             for (int i = 0; i < numLairs; ++i)
@@ -111,6 +115,38 @@ namespace Darkmoor
                 }
             }
             History.addRecord(record);
+        }
+
+        /// <summary>
+        /// Neet to set XCoord and YCoord before calling
+        /// </summary>
+        /// <param name="originX"></param>
+        /// <param name="originY"></param>
+        /// <param name="tierWidth"></param>
+        private void _setTier(int originX, int originY, int tierWidth)
+        {
+            // These are the distances from the origin that the tier areas end
+            int t1LimitX = originX + tierWidth;
+            int t1LimitY = originY + tierWidth;
+            int t2LimitX = t1LimitX + tierWidth;
+            int t2LimitY = t1LimitY + tierWidth;
+            int t3LimitX = t2LimitX + tierWidth;
+            int t3LimitY = t2LimitY + tierWidth;
+
+            // calculating tier ranges in square areas because I'm too laxy
+            // to look up the distance formula again.
+            int distFromOX = Math.Abs(XCoord - originX);
+            int distFromOY = Math.Abs(YCoord - originY);
+
+            // Only correct if we exclude the previous tiers by using else if
+            bool isT1 = (distFromOX <= t1LimitX) && (distFromOY <= t1LimitY);
+            bool isT2 = (distFromOX <= t2LimitX) && (distFromOY <= t2LimitY);
+            bool isT3 = (distFromOX <= t3LimitX) && (distFromOY <= t3LimitY);
+
+            if (isT1) { Tier = 1; }
+            else if (isT2) { Tier = 2; }
+            else if (isT3) { Tier = 3; }
+            else { Tier = 4; }
         }
 
         /// <summary>
