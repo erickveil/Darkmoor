@@ -143,6 +143,7 @@ namespace Darkmoor
             var allowedTypeList = new List<string> 
             { 
                 "construct",
+                "fiend",
                 "monstrosity",
                 "ooze",
                 "undead"

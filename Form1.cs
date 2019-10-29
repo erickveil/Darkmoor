@@ -12,7 +12,7 @@ namespace Darkmoor
 {
     public partial class Form1 : Form
     {
-        DataSaver _gameData;
+        DataSaver _gameData = new DataSaver();
 
         public Form1()
         {

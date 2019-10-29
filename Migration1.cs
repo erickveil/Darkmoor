@@ -121,6 +121,56 @@ namespace Darkmoor
             }
         }
 
+        /// <summary>
+        /// Wandering monsters tend to bleed out from their starting hex.
+        /// They don't leave the table from the hexes they migrate from, only
+        /// add to the tables of the hexes they migrate too.
+        /// </summary>
+        public void MigrateNaturals()
+        {
+            foreach (var hex in _worldMap.HexList)
+            {
+                foreach (var creature in hex.NaturalEncounterPool)
+                {
+                    int roll = _dice.Roll(1, 100);
+                    if (roll > 15) { continue; }
+                    int migrationDireciton = _dice.Roll(1, 6);
+                    var neighborLocation = 
+                        hex.FindNeighborByIndex(migrationDireciton);
+                    var targetHex = 
+                        _worldMap.GetHexByCoordinates(neighborLocation);
+                    targetHex.NaturalEncounterPool.Add(creature);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Similar to the way natural creatures migrate.
+        /// Sometimes they find the world outside the dungeon suitable as well.
+        /// </summary>
+        public void MigrateDungeonEcology()
+        {
+            foreach (var hex in _worldMap.HexList)
+            {
+                foreach (var creature in hex.DungeonEcologyPool)
+                {
+                    int roll = _dice.Roll(1, 100);
+                    if (roll > 15) { continue; }
+                    int migrationDireciton = _dice.Roll(1, 6);
+                    var neighborLocation = 
+                        hex.FindNeighborByIndex(migrationDireciton);
+                    var targetHex = 
+                        _worldMap.GetHexByCoordinates(neighborLocation);
+                    targetHex.DungeonEcologyPool.Add(creature);
+
+                    // migrate outside?
+                    roll = _dice.Roll(1, 100);
+                    if (roll > 5) { continue; }
+                    hex.NaturalEncounterPool.Add(creature);
+                }
+            }
+        }
+
         private void _doMigration(Lair lair, HexData hex)
         {
             if (lair.IsRuins()) { return; }
