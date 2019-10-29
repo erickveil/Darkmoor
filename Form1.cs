@@ -54,5 +54,12 @@ namespace Darkmoor
             int height = (int)(nud_startHeight.Value);
             _gameData.ProgramData.GenerateWorld(width, height);
         }
+
+        private void but_resizeWorld_Click(object sender, EventArgs e)
+        {
+            int width = (int)(nud_resizeWidth.Value);
+            int height = (int)(nud_resizeHeight.Value);
+            _gameData.ProgramData.ResizeWorld(width, height);
+        }
     }
 }

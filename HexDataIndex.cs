@@ -16,6 +16,8 @@ namespace Darkmoor
 
         public GameTime TimeObj;
         public List<HexData> HexList = new List<HexData>();
+        public int WorldWidth;
+        public int WorldHeight;
 
         public HexDataIndex()
         {
@@ -43,12 +45,51 @@ namespace Darkmoor
 
         public void GenerateWorld(int width, int height)
         {
+            WorldWidth = width;
+            WorldHeight = height;
+
             for (int x = 0; x < width; ++x)
             {
                 for (int y = 0; y < height; ++y)
                 {
                     HexList.Add(CreateRandomHex(x, y));
                 }
+            }
+        }
+
+        public void ResizeWorld(int width, int height)
+        {
+            if (width < WorldWidth)
+            {
+                HexList.RemoveAll(hex => hex.XCoord > width);
+                WorldWidth = width;
+            }
+            if (height < WorldHeight)
+            {
+                HexList.RemoveAll(hex => hex.YCoord > height);
+                WorldHeight = height;
+            }
+            if (width > WorldWidth)
+            {
+                for (int x = WorldWidth; x < width; ++x)
+                {
+                    for (int y = 0; y < WorldHeight; ++y)
+                    {
+                        HexList.Add(CreateRandomHex(x, y));
+                    }
+                }
+                WorldWidth = width;
+            }
+            if (height > WorldHeight)
+            {
+                for (int x = 0; x < WorldWidth; ++x)
+                {
+                    for (int y = WorldHeight; y < height; ++y)
+                    {
+                        HexList.Add(CreateRandomHex(x, y));
+                    }
+                }
+                WorldHeight = height;
             }
         }
 
