@@ -85,6 +85,18 @@ namespace Darkmoor
             }
             Civilization defender = defenderBase.HomeCiv;
 
+            // since this method is only called on initial spawn, then the
+            // rule is to merge if two of the same race spawn in the same 
+            // hex area.
+            if (attacker.Patricians.BaseAncestry.Name ==
+                defender.Patricians.BaseAncestry.Name)
+            {
+                defender.JoinOurCivilization(attacker.GetFullName());
+                defender.Patricians.Members += attacker.Patricians.Members;
+                attacker.DissolvePopulation();
+                return;
+            }
+
             record = "The " 
                 + attacker.GetPluralName() + " are attacking the "
                 + defender.GetPluralName() + " at " 
@@ -93,8 +105,8 @@ namespace Darkmoor
             defender.History.addRecord(record, isLogged: false);
             defenderBase.History.addRecord(record, isLogged: false);
 
-            GatherAttackers(attacker, attackerLands);
-            GatherDefenders(defender, defenderLands);
+            GatherAttackers(attacker, attackerLands, defender.GetFullName());
+            GatherDefenders(defender, defenderLands, attacker.GetFullName());
             _attackerStartingForces = GetTotalCombatants(AttackerList);
             _defenderStartingForces = GetTotalCombatants(DefenderList);
 
@@ -234,7 +246,7 @@ namespace Darkmoor
             defenderBase.History.addRecord(record, isLogged: false);
 
             AttackerList.Add(attacker);
-            GatherDefenders(defender, defenderLands);
+            GatherDefenders(defender, defenderLands, attacker.GetFullName());
             _attackerStartingForces = GetTotalCombatants(AttackerList);
             _defenderStartingForces = GetTotalCombatants(DefenderList);
 
@@ -368,13 +380,17 @@ namespace Darkmoor
         /// <param name="attacker"></param>
         /// <param name="attackerHome"></param>
         public void GatherAttackers(Civilization attacker, 
-            HexData attackerHome)
+            HexData attackerHome, string defenderFullName)
         {
             AttackerList.Add(attacker);
             foreach(var lair in attackerHome.LairList)
             {
                 if (lair.IsRuins()) { continue; }
                 if (lair.HomeCiv.GetFullName() == attacker.GetFullName())
+                {
+                    continue;
+                }
+                if (lair.HomeCiv.GetFullName() == defenderFullName)
                 {
                     continue;
                 }
@@ -402,13 +418,17 @@ namespace Darkmoor
         /// <param name="defender"></param>
         /// <param name="defenderHome"></param>
         public void GatherDefenders(Civilization defender, 
-            HexData defenderHome)
+            HexData defenderHome, string attackerFullName)
         {
             DefenderList.Add(defender);
             foreach(var lair in defenderHome.LairList)
             {
                 if (lair.IsRuins()) { continue; }
                 if (lair.HomeCiv.GetFullName() == defender.GetFullName())
+                {
+                    continue;
+                }
+                if (lair.HomeCiv.GetFullName() == attackerFullName)
                 {
                     continue;
                 }
